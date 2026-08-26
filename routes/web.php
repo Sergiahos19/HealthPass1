@@ -1,0 +1,378 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::get('/inscription', function () {
+    $etablissements = Schema::hasTable('ETABLISSEMENT')
+        ? DB::table('ETABLISSEMENT')->where('est_approuve', true)->orderBy('nom_etablissement')->get()
+        : collect();
+
+    return view('auth.register', compact('etablissements'));
+})->name('register');
+
+Route::get('/inscription/medecin', function () {
+    $etablissements = Schema::hasTable('ETABLISSEMENT')
+        ? DB::table('ETABLISSEMENT')->where('est_approuve', true)->orderBy('nom_etablissement')->get()
+        : collect();
+
+    return view('auth.register-doctor', compact('etablissements'));
+})->name('register.doctor');
+
+Route::get('/inscription/service', function () {
+    $etablissements = Schema::hasTable('ETABLISSEMENT')
+        ? DB::table('ETABLISSEMENT')->where('est_approuve', true)->orderBy('nom_etablissement')->get()
+        : collect();
+
+    return view('auth.register-service', compact('etablissements'));
+})->name('register.service');
+
+Route::post('/inscription/medecin', function (Request $request) {
+    $validated = $request->validate([
+        'title' => ['required', 'in:Dr.,Pr.,M.,Mme'], 'first_name' => ['required', 'string', 'max:100'],
+        'last_name' => ['required', 'string', 'max:100'], 'specialty' => ['required', 'in:Médecine Générale,Cardiologie,Dermatologie,Pédiatrie,Autre'],
+        'custom_specialty' => ['required_if:specialty,Autre', 'nullable', 'string', 'max:100'],
+        'rpps_number' => ['nullable', 'digits:11', 'unique:DOCTEUR,rpps_number'], 'email' => ['required', 'email', 'max:255', 'unique:DOCTEUR,email'],
+        'phone' => ['nullable', 'string', 'max:30'], 'password' => ['required', 'string', 'min:8', 'confirmed'],
+        'id_etablissement' => ['required', 'string', 'exists:ETABLISSEMENT,id_etablissement'],
+        'confirmation' => ['accepted'],
+    ]);
+    DB::table('DOCTEUR')->insert([
+        'id_docteur' => (string) Str::uuid(), 'nom' => $validated['last_name'], 'prenom' => $validated['first_name'],
+        'specialite' => $validated['specialty'] === 'Autre' ? $validated['custom_specialty'] : $validated['specialty'], 'rpps_number' => $validated['rpps_number'] ?? null, 'telephone' => $validated['phone'] ?? null,
+        'email' => $validated['email'], 'mot_de_passe' => Hash::make($validated['password']), 'id_etablissement' => $validated['id_etablissement'],
+    ]);
+
+    return to_route('login')->with('success', 'Votre profil médecin a été enregistré et rattaché à votre établissement.');
+})->name('register.doctor.store');
+
+Route::post('/inscription/service', function (Request $request) {
+    $validated = $request->validate([
+        'service_name' => ['required', 'string', 'max:100'], 'specialty' => ['required', 'string', 'max:100'],
+        'building' => ['nullable', 'string', 'max:100'], 'floor' => ['nullable', 'string', 'max:50'],
+        'head_first_name' => ['required', 'string', 'max:100'], 'head_last_name' => ['required', 'string', 'max:100'],
+        'email' => ['required', 'email', 'max:255', 'unique:SERVICE,email', 'unique:UTILISATEUR,email'], 'phone' => ['required', 'string', 'max:30'],
+        'password' => ['required', 'string', 'min:8', 'confirmed'], 'id_etablissement' => ['required', 'string', 'exists:ETABLISSEMENT,id_etablissement'],
+        'confirmation' => ['accepted'],
+    ]);
+    DB::table('SERVICE')->insert([
+        'id_service' => (string) Str::uuid(), 'nom_service' => $validated['service_name'], 'type_service' => $validated['specialty'],
+        'batiment' => $validated['building'] ?? null, 'etage' => $validated['floor'] ?? null, 'chef_prenom' => $validated['head_first_name'],
+        'chef_nom' => $validated['head_last_name'], 'email' => $validated['email'], 'telephone' => $validated['phone'],
+        'mot_de_passe' => Hash::make($validated['password']), 'id_etablissement' => $validated['id_etablissement'],
+    ]);
+    $serviceId = DB::table('SERVICE')->where('email', $validated['email'])->where('id_etablissement', $validated['id_etablissement'])->value('id_service');
+    DB::table('UTILISATEUR')->insert([
+        'id_user' => (string) Str::uuid(), 'nom' => $validated['head_last_name'], 'prenom' => $validated['head_first_name'],
+        'email' => $validated['email'], 'mot_de_passe' => Hash::make($validated['password']), 'id_role' => 'role-service',
+        'id_etablissement' => $validated['id_etablissement'], 'id_service' => $serviceId,
+    ]);
+
+    return to_route('login')->with('success', 'Votre service a été enregistré et rattaché à votre établissement.');
+})->name('register.service.store');
+
+Route::post('/inscription', function (Request $request) {
+    $request->validate([
+        'nom_etablissement' => ['required', 'string', 'max:150'],
+        'type_etablissement' => ['required', 'in:hopital,clinique,cabinet,ehpad'],
+        'ifu' => ['required', 'string', 'max:30'],
+        'adresse' => ['required', 'string', 'max:255'],
+        'code_postal' => ['required', 'string', 'max:20'],
+        'ville' => ['required', 'string', 'max:100'],
+        'prenom_contact' => ['required', 'string', 'max:100'],
+        'nom_contact' => ['required', 'string', 'max:100'],
+        'email_contact' => ['required', 'email', 'max:255'],
+        'password' => ['required', 'string', 'min:8', 'confirmed'],
+        'document_autorisation' => ['required', 'file', 'mimes:pdf,jpg,png', 'max:5120'],
+        'photo_etablissement' => ['required', 'file', 'image', 'max:5120'],
+        'confirmation_informations' => ['accepted'],
+    ]);
+
+    $etablissementId = (string) Str::uuid();
+    $userId = (string) Str::uuid();
+
+    DB::transaction(function () use ($request, $etablissementId, $userId): void {
+        DB::table('ETABLISSEMENT')->insert([
+            'id_etablissement' => $etablissementId,
+            'nom_etablissement' => $request->string('nom_etablissement')->value(),
+            'adresse' => $request->string('adresse')->value().' - '.$request->string('code_postal')->value().' '.$request->string('ville')->value(),
+            'email_etablissement' => $request->string('email_contact')->value(),
+            'numero_ifu' => $request->string('ifu')->value(),
+            'est_approuve' => true,
+        ]);
+
+        DB::table('UTILISATEUR')->insert([
+            'id_user' => $userId,
+            'nom' => $request->string('nom_contact')->value(),
+            'prenom' => $request->string('prenom_contact')->value(),
+            'email' => $request->string('email_contact')->value(),
+            'mot_de_passe' => Hash::make($request->string('password')->value()),
+            'id_role' => 'role-admin',
+            'id_etablissement' => $etablissementId,
+        ]);
+    });
+
+    return to_route('login')->with('success', 'Votre établissement est enregistré. Vous pouvez vous connecter avec vos identifiants administrateur.');
+})->name('register.store');
+
+
+// Route vers la page de connexion
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required', 'string'],
+    ]);
+
+    if (! Auth::attempt([
+        'email' => $request->string('email')->value(),
+        'password' => $request->string('password')->value(),
+    ], $request->boolean('remember')) || ! in_array(Auth::user()->id_role, ['role-admin', 'role-service'], true)) {
+        Auth::logout();
+        return back()->withErrors(['email' => 'Les identifiants sont incorrects.'])
+            ->onlyInput('email');
+    }
+
+    $request->session()->regenerate();
+
+    return Auth::user()->isService() ? to_route('service.dashboard') : to_route('admin.dashboard');
+})->name('login.store');
+
+
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return to_route('home');
+})->middleware('auth')->name('logout');
+
+Route::get('/service/dashboard', function () {
+    abort_unless(Auth::user()?->isService(), 403);
+    abort_unless(Schema::hasTable('SERVICE'), 503);
+
+    $service = DB::table('SERVICE')->where('id_service', Auth::user()->id_service)->where('id_etablissement', Auth::user()->id_etablissement)->first();
+    abort_unless($service, 404);
+    $demandes = Schema::hasTable('RESULTAT_SERVICE')
+        ? DB::table('RESULTAT_SERVICE')->where('id_format', function ($query) use ($service): void {
+            $query->select('id_format')->from('FORMAT')->where('id_service', $service->id_service);
+        })->count()
+        : 0;
+    $demandesRecentes = Schema::hasTable('RESULTAT_SERVICE') && Schema::hasTable('FORMAT')
+        ? DB::table('RESULTAT_SERVICE')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'RESULTAT_SERVICE.id_format')
+            ->join('CONSULTATION', 'CONSULTATION.id_consultation', '=', 'RESULTAT_SERVICE.id_consultation')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'CONSULTATION.id_patient')
+            ->leftJoin('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'CONSULTATION.id_docteur')
+            ->where('FORMAT.id_service', $service->id_service)->latest('RESULTAT_SERVICE.date_resultat')->limit(5)
+            ->select('RESULTAT_SERVICE.*', 'FORMAT.libelle_format', 'PATIENT.nom', 'PATIENT.prenom', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->get()
+        : collect();
+    $urgentes = $demandesRecentes->where('statut', 'Urgent')->count();
+    $traitees = $demandesRecentes->whereIn('statut', ['Traité', 'Traitee', 'Terminé'])->count();
+    $formats = Schema::hasTable('FORMAT')
+        ? DB::table('FORMAT')->where('id_service', $service->id_service)->select('type_examen')->selectRaw('count(*) as total')->groupBy('type_examen')->get()
+        : collect();
+    $formatsTotal = max(1, $formats->sum('total'));
+
+    return view('admin.services.dashboard', compact('service', 'demandes', 'demandesRecentes', 'urgentes', 'traitees', 'formats', 'formatsTotal'));
+})->middleware('auth')->name('service.dashboard');
+
+Route::get('/admin/patients/create', function () {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+
+    return view('admin.patients.create');
+})->middleware('auth')->name('patients.create');
+
+Route::post('/admin/patients', function (Request $request) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+
+    $validated = $request->validate([
+        'nom' => ['required', 'string', 'max:100'],
+        'prenom' => ['required', 'string', 'max:100'],
+        'sexe' => ['required', 'in:M,F,X'],
+        'date_naissance' => ['required', 'date', 'before:today'],
+        'email' => ['required', 'email', 'max:255', 'unique:PATIENT,email'],
+        'telephone' => ['nullable', 'string', 'max:30'],
+        'taille' => ['nullable', 'numeric', 'min:0.5', 'max:2.5'],
+        'poids' => ['nullable', 'numeric', 'min:1', 'max:500'],
+        'groupe_sanguin' => ['nullable', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'],
+        'contact_urgence_nom' => ['required', 'string', 'max:150'],
+        'contact_urgence_lien' => ['required', 'string', 'max:80'],
+        'contact_urgence_telephone' => ['required', 'string', 'max:30'],
+        'contact_urgence_email' => ['nullable', 'email', 'max:255'],
+        'contact_urgence_adresse' => ['nullable', 'string', 'max:500'],
+        'biometric_data' => ['nullable', 'string'],
+    ]);
+
+    $validated['id_patient'] = (string) Str::uuid();
+    $validated['id_etablissement'] = Auth::user()->id_etablissement;
+    $validated['empreinte_digitale'] = $validated['biometric_data'] ?? null;
+    unset($validated['biometric_data']);
+
+    DB::table('PATIENT')->insert($validated);
+
+    return to_route('admin.dashboard', ['section' => 'patients'])
+        ->with('success', 'Le patient a été enregistré avec succès.');
+})->middleware('auth')->name('patients.store');
+
+// Route Tableau de bord Administrateur
+Route::get('/admin/dashboard', function () {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+
+    $user = Auth::user();
+    $etablissementId = $user->id_etablissement;
+    $etablissement = DB::table('ETABLISSEMENT')->where('id_etablissement', $etablissementId)->first();
+    $periode = request()->string('periode', 'today')->value();
+    $dateDebut = today();
+    $dateFin = $periode === 'week' ? today()->endOfWeek() : today();
+    $rendezVous = Schema::hasTable('RENDEZ_VOUS')
+        ? DB::table('RENDEZ_VOUS')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'RENDEZ_VOUS.id_patient')
+            ->join('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'RENDEZ_VOUS.id_docteur')
+            ->where('RENDEZ_VOUS.id_etablissement', $etablissementId)
+            ->whereBetween('date_rdv', [$dateDebut, $dateFin])
+            ->orderBy('date_rdv')->orderBy('heure_rdv')
+            ->select('RENDEZ_VOUS.*', 'PATIENT.nom', 'PATIENT.prenom', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->get()
+        : collect();
+    $patientsRecents = Schema::hasTable('PATIENT')
+        ? DB::table('PATIENT')->where('id_etablissement', $etablissementId)->latest('id_patient')->limit(5)->get()
+        : collect();
+    $patientsCount = Schema::hasTable('PATIENT')
+        ? DB::table('PATIENT')->where('id_etablissement', $etablissementId)->count()
+        : 0;
+    $medecinsCount = Schema::hasTable('DOCTEUR')
+        ? DB::table('DOCTEUR')->where('id_etablissement', $etablissementId)->count()
+        : 0;
+    $section = request()->string('section')->value();
+    $medecins = $section === 'medecins' && Schema::hasTable('DOCTEUR')
+        ? DB::table('DOCTEUR')->where('id_etablissement', $etablissementId)->orderBy('nom')->get()
+        : collect();
+    $medecinEdit = $section === 'medecins' && request()->filled('edit') && Schema::hasTable('DOCTEUR')
+        ? DB::table('DOCTEUR')->where('id_docteur', request()->string('edit')->value())->where('id_etablissement', $etablissementId)->first()
+        : null;
+    $salleAttente = Schema::hasTable('SALLE_ATTENTE')
+        ? DB::table('SALLE_ATTENTE')->join('PATIENT', 'PATIENT.id_patient', '=', 'SALLE_ATTENTE.id_patient')
+            ->where('SALLE_ATTENTE.id_etablissement', $etablissementId)->where('SALLE_ATTENTE.statut', 'En attente')
+            ->orderBy('arrivee_at')->select('SALLE_ATTENTE.*', 'PATIENT.nom', 'PATIENT.prenom')->get()
+        : collect();
+    $patients = $section === 'rendez-vous' && Schema::hasTable('PATIENT')
+        ? DB::table('PATIENT')->where('id_etablissement', $etablissementId)->orderBy('nom')->orderBy('prenom')->get()
+        : collect();
+    $medecinsRendezVous = $section === 'rendez-vous' && Schema::hasTable('DOCTEUR')
+        ? DB::table('DOCTEUR')->where('id_etablissement', $etablissementId)->orderBy('nom')->orderBy('prenom')->get()
+        : collect();
+    $rendezVousEdit = $section === 'rendez-vous' && request()->filled('edit')
+        ? DB::table('RENDEZ_VOUS')->where('id_rendez_vous', request()->string('edit')->value())->where('id_etablissement', $etablissementId)->first()
+        : null;
+    $services = $section === 'services' && Schema::hasTable('SERVICE')
+        ? DB::table('SERVICE')->where('id_etablissement', $etablissementId)->orderBy('nom_service')->get()
+        : collect();
+    $serviceEdit = $section === 'services' && request()->filled('edit') && Schema::hasTable('SERVICE')
+        ? DB::table('SERVICE')->where('id_service', request()->string('edit')->value())->where('id_etablissement', $etablissementId)->first()
+        : null;
+
+    return view('admin.dashboard', compact('user', 'etablissement', 'rendezVous', 'patientsRecents', 'patientsCount', 'medecinsCount', 'section', 'medecins', 'medecinEdit', 'patients', 'medecinsRendezVous', 'periode', 'rendezVousEdit', 'services', 'serviceEdit', 'salleAttente'));
+})->middleware('auth')->name('admin.dashboard');
+
+Route::post('/admin/rendez-vous', function (Request $request) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    $validated = $request->validate([
+        'patient_id' => ['required', 'string', 'exists:PATIENT,id_patient'],
+        'doctor_id' => ['required', 'string', 'exists:DOCTEUR,id_docteur'],
+        'date' => ['required', 'date', 'after_or_equal:today'],
+        'time' => ['required', 'date_format:H:i'],
+        'reason' => ['nullable', 'string', 'max:150'],
+    ]);
+    $etablissementId = Auth::user()->id_etablissement;
+    abort_unless(DB::table('PATIENT')->where('id_patient', $validated['patient_id'])->where('id_etablissement', $etablissementId)->exists(), 422);
+    abort_unless(DB::table('DOCTEUR')->where('id_docteur', $validated['doctor_id'])->where('id_etablissement', $etablissementId)->exists(), 422);
+    DB::table('RENDEZ_VOUS')->insert([
+        'id_rendez_vous' => (string) Str::uuid(), 'id_patient' => $validated['patient_id'], 'id_docteur' => $validated['doctor_id'],
+        'id_etablissement' => $etablissementId, 'date_rdv' => $validated['date'], 'heure_rdv' => $validated['time'],
+        'motif' => $validated['reason'] ?? null, 'statut' => 'Planifié', 'created_at' => now(), 'updated_at' => now(),
+    ]);
+    return to_route('admin.dashboard', ['section' => 'rendez-vous'])->with('success', 'Le rendez-vous a été programmé.');
+})->middleware('auth')->name('appointments.store');
+
+Route::delete('/admin/rendez-vous/{id}', function (string $id) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    DB::table('RENDEZ_VOUS')->where('id_rendez_vous', $id)->where('id_etablissement', Auth::user()->id_etablissement)->delete();
+    return to_route('admin.dashboard', ['section' => 'rendez-vous'])->with('success', 'Le rendez-vous a été supprimé.');
+})->middleware('auth')->name('appointments.destroy');
+
+Route::put('/admin/rendez-vous/{id}', function (Request $request, string $id) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    $validated = $request->validate([
+        'patient_id' => ['required', 'string', 'exists:PATIENT,id_patient'], 'doctor_id' => ['required', 'string', 'exists:DOCTEUR,id_docteur'],
+        'date' => ['required', 'date', 'after_or_equal:today'], 'time' => ['required', 'date_format:H:i'], 'reason' => ['nullable', 'string', 'max:150'],
+    ]);
+    $etablissementId = Auth::user()->id_etablissement;
+    abort_unless(DB::table('PATIENT')->where('id_patient', $validated['patient_id'])->where('id_etablissement', $etablissementId)->exists(), 422);
+    abort_unless(DB::table('DOCTEUR')->where('id_docteur', $validated['doctor_id'])->where('id_etablissement', $etablissementId)->exists(), 422);
+    DB::table('RENDEZ_VOUS')->where('id_rendez_vous', $id)->where('id_etablissement', $etablissementId)->update([
+        'id_patient' => $validated['patient_id'], 'id_docteur' => $validated['doctor_id'], 'date_rdv' => $validated['date'], 'heure_rdv' => $validated['time'],
+        'motif' => $validated['reason'] ?? null, 'updated_at' => now(),
+    ]);
+    return to_route('admin.dashboard', ['section' => 'rendez-vous'])->with('success', 'Le rendez-vous a été modifié.');
+})->middleware('auth')->name('appointments.update');
+
+Route::post('/admin/services', function (Request $request) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    $validated = $request->validate([
+        'nom_service' => ['required', 'string', 'max:100'], 'type_service' => ['nullable', 'string', 'max:100'],
+        'telephone' => ['nullable', 'string', 'max:30'], 'email' => ['nullable', 'email', 'max:255'],
+    ]);
+    DB::table('SERVICE')->insert($validated + [
+        'id_service' => (string) Str::uuid(), 'id_etablissement' => Auth::user()->id_etablissement,
+    ]);
+    return to_route('admin.dashboard', ['section' => 'services'])->with('success', 'Le service a été créé.');
+})->middleware('auth')->name('services.store');
+
+Route::put('/admin/services/{id}', function (Request $request, string $id) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    $validated = $request->validate([
+        'nom_service' => ['required', 'string', 'max:100'], 'type_service' => ['nullable', 'string', 'max:100'],
+        'telephone' => ['nullable', 'string', 'max:30'], 'email' => ['nullable', 'email', 'max:255'],
+    ]);
+    DB::table('SERVICE')->where('id_service', $id)->where('id_etablissement', Auth::user()->id_etablissement)->update($validated);
+    return to_route('admin.dashboard', ['section' => 'services'])->with('success', 'Le service a été modifié.');
+})->middleware('auth')->name('services.update');
+
+Route::delete('/admin/services/{id}', function (string $id) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    DB::table('SERVICE')->where('id_service', $id)->where('id_etablissement', Auth::user()->id_etablissement)->delete();
+    return to_route('admin.dashboard', ['section' => 'services'])->with('success', 'Le service a été supprimé.');
+})->middleware('auth')->name('services.destroy');
+
+Route::put('/admin/medecins/{id}', function (Request $request, string $id) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    $validated = $request->validate([
+        'nom' => ['required', 'string', 'max:100'], 'prenom' => ['required', 'string', 'max:100'],
+        'specialite' => ['nullable', 'string', 'max:100'], 'telephone' => ['nullable', 'string', 'max:30'],
+        'email' => ['nullable', 'email', 'max:255'],
+    ]);
+    DB::table('DOCTEUR')->where('id_docteur', $id)->where('id_etablissement', Auth::user()->id_etablissement)->update($validated);
+    return to_route('admin.dashboard', ['section' => 'medecins'])->with('success', 'Le médecin a été modifié.');
+})->middleware('auth')->name('doctors.update');
+
+Route::delete('/admin/medecins/{id}', function (string $id) {
+    abort_unless(Auth::user()?->isAdministrator(), 403);
+    DB::table('DOCTEUR')->where('id_docteur', $id)->where('id_etablissement', Auth::user()->id_etablissement)->delete();
+    return to_route('admin.dashboard', ['section' => 'medecins'])->with('success', 'Le médecin a été supprimé.');
+})->middleware('auth')->name('doctors.destroy');
+
+Route::get('/admin/medecins', function () {
+    return to_route('admin.dashboard', ['section' => 'medecins']);
+})->middleware('auth')->name('admin.medecins');
