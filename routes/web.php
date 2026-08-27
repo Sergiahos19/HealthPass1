@@ -186,8 +186,94 @@ Route::get('/service/dashboard', function () {
         : collect();
     $formatsTotal = max(1, $formats->sum('total'));
 
-    return view('admin.services.dashboard', compact('service', 'demandes', 'demandesRecentes', 'urgentes', 'traitees', 'formats', 'formatsTotal'));
+    if (Schema::hasTable('DEMANDE_ANALYSE')) {
+        $demandes = DB::table('DEMANDE_ANALYSE')->where('id_service', $service->id_service)->count();
+        $demandesRecentes = DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->leftJoin('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'DEMANDE_ANALYSE.id_docteur')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)->latest('DEMANDE_ANALYSE.demande_at')->limit(5)
+            ->select('DEMANDE_ANALYSE.*', 'FORMAT.libelle_format', 'PATIENT.nom', 'PATIENT.prenom', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->get();
+        $urgentes = DB::table('DEMANDE_ANALYSE')->where('id_service', $service->id_service)->whereIn('priorite', ['Urgente', 'STAT'])->whereNotIn('statut', ['Terminé'])->count();
+        $traitees = DB::table('DEMANDE_ANALYSE')->where('id_service', $service->id_service)->where('statut', 'Terminé')->whereDate('traitee_at', today())->count();
+    }
+
+    $section = request()->string('section')->value();
+    $patients = $section === 'analyses' && Schema::hasTable('PATIENT')
+        ? DB::table('PATIENT')->where('id_etablissement', Auth::user()->id_etablissement)->orderBy('nom')->orderBy('prenom')->get()
+        : collect();
+    $demandesAnalyse = $section === 'analyses' && Schema::hasTable('DEMANDE_ANALYSE')
+        ? DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->leftJoin('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'DEMANDE_ANALYSE.id_docteur')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)->latest('DEMANDE_ANALYSE.demande_at')->limit(20)
+            ->select('DEMANDE_ANALYSE.*', 'PATIENT.nom', 'PATIENT.prenom', 'PATIENT.npi', 'FORMAT.libelle_format', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->get()
+        : collect();
+    $demandesPourSaisie = $section === 'analyses' && Schema::hasTable('DEMANDE_ANALYSE')
+        ? DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)
+            ->whereNotIn('DEMANDE_ANALYSE.statut', ['Terminé', 'Terminee'])
+            ->orderBy('PATIENT.nom')->orderBy('PATIENT.prenom')->get()
+        : collect();
+    $demandeSelectionnee = request()->filled('demande') && Schema::hasTable('DEMANDE_ANALYSE')
+        ? DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->leftJoin('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'DEMANDE_ANALYSE.id_docteur')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)
+            ->where('DEMANDE_ANALYSE.id_demande', request()->string('demande')->value())
+            ->select('DEMANDE_ANALYSE.*', 'PATIENT.nom', 'PATIENT.prenom', 'PATIENT.npi', 'FORMAT.libelle_format', 'FORMAT.type_examen', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->first()
+        : null;
+        $serviceSettings = $section === 'parametres' && $service ? $service : null;
+
+    return view('admin.services.dashboard', compact('service', 'demandes', 'demandesRecentes', 'urgentes', 'traitees', 'formats', 'formatsTotal', 'section', 'patients', 'demandesAnalyse', 'demandesPourSaisie', 'demandeSelectionnee', 'serviceSettings'));
 })->middleware('auth')->name('service.dashboard');
+
+Route::get('/service/analyses', function () {
+    return to_route('service.dashboard', ['section' => 'analyses']);
+})->middleware('auth')->name('service.analyses');
+
+Route::get('/service/parametres', function () {
+    abort_unless(Auth::user()?->isService(), 403);
+    $service = DB::table('SERVICE')->where('id_service', Auth::user()->id_service)->where('id_etablissement', Auth::user()->id_etablissement)->first();
+    abort_unless($service, 404);
+    return to_route('service.dashboard', ['section' => 'parametres']);
+})->middleware('auth')->name('service.settings');
+
+Route::put('/service/parametres', function (Request $request) {
+    abort_unless(Auth::user()?->isService(), 403);
+    $validated = $request->validate([
+        'nom_service' => ['required', 'string', 'max:100'], 'type_service' => ['nullable', 'string', 'max:100'],
+        'telephone' => ['nullable', 'string', 'max:30'], 'email' => ['nullable', 'email', 'max:255'],
+        'batiment' => ['nullable', 'string', 'max:100'], 'etage' => ['nullable', 'string', 'max:50'],
+        'email_connexion' => ['required', 'email', 'max:255', 'unique:UTILISATEUR,email,'.Auth::user()->id_user.',id_user'],
+        'current_password' => ['required', 'string'], 'new_password' => ['nullable', 'string', 'min:8', 'confirmed'],
+    ]);
+    abort_unless(Hash::check($validated['current_password'], Auth::user()->mot_de_passe), 422, 'Mot de passe actuel incorrect.');
+    DB::table('SERVICE')->where('id_service', Auth::user()->id_service)->where('id_etablissement', Auth::user()->id_etablissement)->update(collect($validated)->only(['nom_service', 'type_service', 'telephone', 'email', 'batiment', 'etage'])->all());
+    DB::table('UTILISATEUR')->where('id_user', Auth::user()->id_user)->update(array_filter([
+        'email' => $validated['email_connexion'],
+        'mot_de_passe' => filled($validated['new_password'] ?? null) ? Hash::make($validated['new_password']) : null,
+    ]));
+    return to_route('service.dashboard', ['section' => 'parametres'])->with('success', 'Les paramètres du service ont été enregistrés.');
+})->middleware('auth')->name('service.settings.update');
+
+Route::put('/service/analyses/{id}/resultat', function (Request $request, string $id) {
+    abort_unless(Auth::user()?->isService(), 403);
+    $service = DB::table('SERVICE')->where('id_service', Auth::user()->id_service)->where('id_etablissement', Auth::user()->id_etablissement)->first();
+    abort_unless($service, 404);
+    $validated = $request->validate([
+        'resultat' => ['required', 'string', 'max:10000'],
+    ]);
+    $updated = DB::table('DEMANDE_ANALYSE')->where('id_demande', $id)->where('id_service', $service->id_service)->whereNotIn('statut', ['Terminé', 'Terminee'])->update([
+        'resultat' => $validated['resultat'], 'statut' => 'Terminé', 'traitee_at' => now(), 'updated_at' => now(),
+    ]);
+    abort_unless($updated, 404);
+    return to_route('service.dashboard', ['section' => 'analyses'])->with('success', 'Le résultat a été enregistré.');
+})->middleware('auth')->name('service.analyses.resultat');
 
 Route::get('/admin/patients/create', function () {
     abort_unless(Auth::user()?->isAdministrator(), 403);
