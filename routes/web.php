@@ -283,351 +283,94 @@ Route::get('/service/dashboard', function () {
         : collect();
     $formatsTotal = max(1, $formats->sum('total'));
 
-    return view('admin.services.dashboard', compact('service', 'demandes', 'demandesRecentes', 'urgentes', 'traitees', 'formats', 'formatsTotal'));
+    if (Schema::hasTable('DEMANDE_ANALYSE')) {
+        $demandes = DB::table('DEMANDE_ANALYSE')->where('id_service', $service->id_service)->count();
+        $demandesRecentes = DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->leftJoin('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'DEMANDE_ANALYSE.id_docteur')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)->latest('DEMANDE_ANALYSE.demande_at')->limit(5)
+            ->select('DEMANDE_ANALYSE.*', 'FORMAT.libelle_format', 'PATIENT.nom', 'PATIENT.prenom', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->get();
+        $urgentes = DB::table('DEMANDE_ANALYSE')->where('id_service', $service->id_service)->whereIn('priorite', ['Urgente', 'STAT'])->whereNotIn('statut', ['Terminé'])->count();
+        $traitees = DB::table('DEMANDE_ANALYSE')->where('id_service', $service->id_service)->where('statut', 'Terminé')->whereDate('traitee_at', today())->count();
+    }
+
+    $section = request()->string('section')->value();
+    $patients = $section === 'analyses' && Schema::hasTable('PATIENT')
+        ? DB::table('PATIENT')->where('id_etablissement', Auth::user()->id_etablissement)->orderBy('nom')->orderBy('prenom')->get()
+        : collect();
+    $demandesAnalyse = $section === 'analyses' && Schema::hasTable('DEMANDE_ANALYSE')
+        ? DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->leftJoin('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'DEMANDE_ANALYSE.id_docteur')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)->latest('DEMANDE_ANALYSE.demande_at')->limit(20)
+            ->select('DEMANDE_ANALYSE.*', 'PATIENT.nom', 'PATIENT.prenom', 'PATIENT.npi', 'FORMAT.libelle_format', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->get()
+        : collect();
+    $demandesPourSaisie = $section === 'analyses' && Schema::hasTable('DEMANDE_ANALYSE')
+        ? DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)
+            ->whereNotIn('DEMANDE_ANALYSE.statut', ['Terminé', 'Terminee'])
+            ->orderBy('PATIENT.nom')->orderBy('PATIENT.prenom')->get()
+        : collect();
+    $demandeSelectionnee = request()->filled('demande') && Schema::hasTable('DEMANDE_ANALYSE')
+        ? DB::table('DEMANDE_ANALYSE')
+            ->join('PATIENT', 'PATIENT.id_patient', '=', 'DEMANDE_ANALYSE.id_patient')
+            ->join('FORMAT', 'FORMAT.id_format', '=', 'DEMANDE_ANALYSE.id_format')
+            ->leftJoin('DOCTEUR', 'DOCTEUR.id_docteur', '=', 'DEMANDE_ANALYSE.id_docteur')
+            ->where('DEMANDE_ANALYSE.id_service', $service->id_service)
+            ->where('DEMANDE_ANALYSE.id_demande', request()->string('demande')->value())
+            ->select('DEMANDE_ANALYSE.*', 'PATIENT.nom', 'PATIENT.prenom', 'PATIENT.npi', 'FORMAT.libelle_format', 'FORMAT.type_examen', 'DOCTEUR.nom as docteur_nom', 'DOCTEUR.prenom as docteur_prenom')->first()
+        : null;
+        $serviceSettings = $section === 'parametres' && $service ? $service : null;
+
+    return view('admin.services.dashboard', compact('service', 'demandes', 'demandesRecentes', 'urgentes', 'traitees', 'formats', 'formatsTotal', 'section', 'patients', 'demandesAnalyse', 'demandesPourSaisie', 'demandeSelectionnee', 'serviceSettings'));
 })->middleware('auth')->name('service.dashboard');
 
-$doctorForAuthenticatedUser = static function (): object {
-    $user = Auth::user();
-    abort_unless($user?->isDoctor(), 403);
+Route::get('/service/analyses', function () {
+    return to_route('service.dashboard', ['section' => 'analyses']);
+})->middleware('auth')->name('service.analyses');
 
-    $query = DB::table('DOCTEUR')
-        ->join('ETABLISSEMENT', 'ETABLISSEMENT.id_etablissement', '=', 'DOCTEUR.id_etablissement')
-        ->where('DOCTEUR.id_etablissement', $user->id_etablissement)
-        ->select('DOCTEUR.*', 'ETABLISSEMENT.nom_etablissement');
+Route::get('/service/parametres', function () {
+    abort_unless(Auth::user()?->isService(), 403);
+    $service = DB::table('SERVICE')->where('id_service', Auth::user()->id_service)->where('id_etablissement', Auth::user()->id_etablissement)->first();
+    abort_unless($service, 404);
+    return to_route('service.dashboard', ['section' => 'parametres']);
+})->middleware('auth')->name('service.settings');
 
-    if (Schema::hasColumn('DOCTEUR', 'id_user')) {
-        $query->where('DOCTEUR.id_user', $user->id_user);
-    } else {
-        $query->whereRaw('LOWER(DOCTEUR.email) = ?', [mb_strtolower($user->email)]);
-    }
-    if (Schema::hasColumn('DOCTEUR', 'est_approuve')) {
-        $query->where('DOCTEUR.est_approuve', true);
-    }
-
-    $doctor = $query->first();
-    abort_unless($doctor, 403);
-
-    return $doctor;
-};
-
-Route::get('/medecin/dashboard', function () use ($doctorForAuthenticatedUser) {
-    $doctor = $doctorForAuthenticatedUser();
-    $etablissementId = Auth::user()->id_etablissement;
-    $section = request()->string('section', 'home')->value();
-    $allowedSections = ['home', 'patients', 'consultations', 'analyses', 'settings'];
-    if (! in_array($section, $allowedSections, true)) {
-        $section = 'home';
-    }
-
-    $patientsQuery = DB::table('PATIENT')->where('id_etablissement', $etablissementId);
-    $patientsTotal = (clone $patientsQuery)->count();
-    $patientsHommes = (clone $patientsQuery)->where('sexe', 'M')->count();
-    $patientsFemmes = (clone $patientsQuery)->where('sexe', 'F')->count();
-    $patientsNouveaux = Schema::hasColumn('PATIENT', 'created_at')
-        ? (clone $patientsQuery)->whereDate('created_at', today())->count()
-        : 0;
-
-    $search = request()->string('search')->trim()->value();
-    $sexe = request()->string('sexe')->value();
-    $groupeSanguin = request()->string('groupe_sanguin')->value();
-    $datePeriod = request()->string('date_period')->value();
-    $dateFrom = request()->string('date_from')->value();
-    $dateTo = request()->string('date_to')->value();
-    if ($search !== '') {
-        $patientsQuery->where(function ($query) use ($search): void {
-            $term = '%'.$search.'%';
-            $query->where('nom', 'like', $term)->orWhere('prenom', 'like', $term)
-                ->orWhere('email', 'like', $term)->orWhere('telephone', 'like', $term);
-        });
-    }
-    if (in_array($sexe, ['M', 'F', 'X'], true)) {
-        $patientsQuery->where('sexe', $sexe);
-    }
-    if (in_array($groupeSanguin, ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], true)) {
-        $patientsQuery->where('groupe_sanguin', $groupeSanguin);
-    }
-    if (in_array($datePeriod, ['today', 'yesterday', 'month', 'custom'], true) && Schema::hasTable('RENDEZ_VOUS')) {
-        if ($datePeriod === 'today') {
-            $dateFrom = $dateTo = today()->toDateString();
-        } elseif ($datePeriod === 'yesterday') {
-            $dateFrom = $dateTo = today()->subDay()->toDateString();
-        } elseif ($datePeriod === 'month') {
-            $dateFrom = today()->startOfMonth()->toDateString();
-            $dateTo = today()->endOfMonth()->toDateString();
-        }
-        $patientsQuery->whereExists(function ($query) use ($doctor, $etablissementId, $dateFrom, $dateTo): void {
-            $query->selectRaw('1')->from('RENDEZ_VOUS')
-                ->whereColumn('RENDEZ_VOUS.id_patient', 'PATIENT.id_patient')
-                ->where('RENDEZ_VOUS.id_docteur', $doctor->id_docteur)
-                ->where('RENDEZ_VOUS.id_etablissement', $etablissementId)
-                ->whereBetween('RENDEZ_VOUS.date_rdv', [$dateFrom, $dateTo]);
-        });
-    }
-    $patients = $patientsQuery->orderBy('nom')->orderBy('prenom')->get();
-
-    $patientFocus = null;
-    $consultationsPatient = collect();
-    $analysesPatient = collect();
-    $selectedPatientId = request()->string('patient')->value();
-    if ($section === 'consultations' && $selectedPatientId === '' && Schema::hasTable('RENDEZ_VOUS')) {
-        $selectedPatientId = (string) DB::table('RENDEZ_VOUS')
-            ->where('id_docteur', $doctor->id_docteur)
-            ->where('id_etablissement', $etablissementId)
-            ->whereDate('date_rdv', today())
-            ->orderBy('heure_rdv')
-            ->value('id_patient');
-    }
-    if ($selectedPatientId !== '') {
-        $patientFocus = DB::table('PATIENT')->where('id_patient', $selectedPatientId)
-            ->where('id_etablissement', $etablissementId)->first();
-        abort_unless($patientFocus, 404);
-        if (Schema::hasTable('CONSULTATION')) {
-            $consultationsPatientQuery = DB::table('CONSULTATION')
-                ->where('id_patient', $patientFocus->id_patient)->where('id_docteur', $doctor->id_docteur);
-            if (Schema::hasColumn('CONSULTATION', 'id_etablissement')) {
-                $consultationsPatientQuery->where('id_etablissement', $etablissementId);
-            }
-            $consultationsPatient = $consultationsPatientQuery->latest('date_consultation')->latest('heure')->get();
-        }
-        if (Schema::hasTable('ANALYSE')) {
-            $analysesPatientQuery = DB::table('ANALYSE')
-                ->leftJoin('SERVICE', 'SERVICE.id_service', '=', 'ANALYSE.id_service')
-                ->where('ANALYSE.id_patient', $patientFocus->id_patient)
-                ->where('ANALYSE.id_docteur', $doctor->id_docteur);
-            if (Schema::hasColumn('ANALYSE', 'id_etablissement')) {
-                $analysesPatientQuery->where('ANALYSE.id_etablissement', $etablissementId);
-            }
-            $analysesPatient = $analysesPatientQuery->select('ANALYSE.*', 'SERVICE.nom_service')->latest('date_analyse')->get();
-        }
-    }
-    $prescriptionsPatient = Schema::hasTable('PRESCRIPTION')
-        ? DB::table('PRESCRIPTION')->where('id_patient', $patientFocus?->id_patient)
-            ->where('id_docteur', $doctor->id_docteur)->latest('date_prescription')->get()
-        : collect();
-
-    $todayAppointments = Schema::hasTable('RENDEZ_VOUS')
-        ? DB::table('RENDEZ_VOUS')->join('PATIENT', 'PATIENT.id_patient', '=', 'RENDEZ_VOUS.id_patient')
-            ->where('RENDEZ_VOUS.id_docteur', $doctor->id_docteur)
-            ->where('RENDEZ_VOUS.id_etablissement', $etablissementId)->whereDate('RENDEZ_VOUS.date_rdv', today())
-            ->select('RENDEZ_VOUS.*', 'PATIENT.nom', 'PATIENT.prenom', 'PATIENT.sexe', 'PATIENT.groupe_sanguin')
-            ->orderBy('heure_rdv')->get()
-        : collect();
-    if ($section === 'consultations' && request()->filled('patient')) {
-        $selectedPatient = request()->string('patient')->value();
-        $todayAppointments = $todayAppointments->sortByDesc(
-            fn ($appointment): bool => $appointment->id_patient === $selectedPatient
-        )->values();
-    }
-    $todayConsultations = Schema::hasTable('CONSULTATION')
-        ? DB::table('CONSULTATION')->where('id_docteur', $doctor->id_docteur)
-            ->when(Schema::hasColumn('CONSULTATION', 'id_etablissement'), fn ($query) => $query->where('id_etablissement', $etablissementId))
-            ->whereDate('date_consultation', today())->count()
-        : 0;
-    $todayAnalyses = Schema::hasTable('ANALYSE')
-        ? DB::table('ANALYSE')->where('id_docteur', $doctor->id_docteur)
-            ->when(Schema::hasColumn('ANALYSE', 'id_etablissement'), fn ($query) => $query->where('id_etablissement', $etablissementId))
-            ->whereDate('date_analyse', today())->count()
-        : 0;
-    $services = Schema::hasTable('SERVICE')
-        ? DB::table('SERVICE')->where('id_etablissement', $etablissementId)->orderBy('nom_service')->get()
-        : collect();
-    $recentConsultations = Schema::hasTable('CONSULTATION')
-        ? DB::table('CONSULTATION')->join('PATIENT', 'PATIENT.id_patient', '=', 'CONSULTATION.id_patient')
-            ->where('CONSULTATION.id_docteur', $doctor->id_docteur)
-            ->when(Schema::hasColumn('CONSULTATION', 'id_etablissement'), fn ($query) => $query->where('CONSULTATION.id_etablissement', $etablissementId))
-            ->select('CONSULTATION.*', 'PATIENT.nom', 'PATIENT.prenom')->latest('date_consultation')->latest('heure')->limit(5)->get()
-        : collect();
-
-    return view('admin.docteur.dashboard', compact(
-        'doctor', 'section', 'patients', 'patientsTotal', 'patientsHommes', 'patientsFemmes', 'patientsNouveaux',
-        'search', 'sexe', 'groupeSanguin', 'datePeriod', 'dateFrom', 'dateTo', 'patientFocus', 'consultationsPatient',
-        'analysesPatient', 'prescriptionsPatient', 'todayAppointments', 'todayConsultations', 'todayAnalyses', 'services', 'recentConsultations'
-    ));
-})->middleware('auth')->name('doctor.dashboard');
-
-Route::post('/medecin/prescriptions', function (Request $request) use ($doctorForAuthenticatedUser) {
-    $doctor = $doctorForAuthenticatedUser();
-    abort_unless(Schema::hasTable('PRESCRIPTION'), 503);
+Route::put('/service/parametres', function (Request $request) {
+    abort_unless(Auth::user()?->isService(), 403);
     $validated = $request->validate([
-        'patient_id' => ['required', 'string', 'exists:PATIENT,id_patient'],
-        'medicaments' => ['required', 'array', 'min:1'],
-        'medicaments.*.medicament' => ['required', 'string', 'max:150'],
-        'medicaments.*.dosage' => ['nullable', 'string', 'max:100'],
-        'medicaments.*.duree_jours' => ['nullable', 'integer', 'min:1', 'max:3650'],
-        'medicaments.*.frequence' => ['nullable', 'string', 'max:100'],
-        'medicaments.*.quantite' => ['nullable', 'integer', 'min:1', 'max:10000'],
+        'nom_service' => ['required', 'string', 'max:100'], 'type_service' => ['nullable', 'string', 'max:100'],
+        'telephone' => ['nullable', 'string', 'max:30'], 'email' => ['nullable', 'email', 'max:255'],
+        'batiment' => ['nullable', 'string', 'max:100'], 'etage' => ['nullable', 'string', 'max:50'],
+        'email_connexion' => ['required', 'email', 'max:255', 'unique:UTILISATEUR,email,'.Auth::user()->id_user.',id_user'],
+        'current_password' => ['required', 'string'], 'new_password' => ['nullable', 'string', 'min:8', 'confirmed'],
     ]);
-    abort_unless(DB::table('PATIENT')->where('id_patient', $validated['patient_id'])
-        ->where('id_etablissement', Auth::user()->id_etablissement)->exists(), 404);
+    abort_unless(Hash::check($validated['current_password'], Auth::user()->mot_de_passe), 422, 'Mot de passe actuel incorrect.');
+    DB::table('SERVICE')->where('id_service', Auth::user()->id_service)->where('id_etablissement', Auth::user()->id_etablissement)->update(collect($validated)->only(['nom_service', 'type_service', 'telephone', 'email', 'batiment', 'etage'])->all());
+    DB::table('UTILISATEUR')->where('id_user', Auth::user()->id_user)->update(array_filter([
+        'email' => $validated['email_connexion'],
+        'mot_de_passe' => filled($validated['new_password'] ?? null) ? Hash::make($validated['new_password']) : null,
+    ]));
+    return to_route('service.dashboard', ['section' => 'parametres'])->with('success', 'Les paramètres du service ont été enregistrés.');
+})->middleware('auth')->name('service.settings.update');
 
-    DB::transaction(function () use ($validated, $doctor): void {
-        foreach ($validated['medicaments'] as $medicament) {
-            DB::table('PRESCRIPTION')->insert([
-                'id_prescription' => (string) Str::uuid(),
-                'id_patient' => $validated['patient_id'],
-                'id_docteur' => $doctor->id_docteur,
-                'id_etablissement' => Auth::user()->id_etablissement,
-                'medicament' => $medicament['medicament'],
-                'dosage' => $medicament['dosage'] ?? null,
-                'duree_jours' => $medicament['duree_jours'] ?? null,
-                'frequence' => $medicament['frequence'] ?? null,
-                'quantite' => $medicament['quantite'] ?? null,
-                'date_prescription' => today(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-    });
-
-    return to_route('doctor.patients.show', $validated['patient_id'])
-        ->with('success', 'La prescription a été enregistrée.');
-})->middleware('auth')->name('doctor.prescriptions.store');
-
-foreach ([
-    'patients' => 'patients',
-    'consultations' => 'consultations',
-    'analyses' => 'analyses',
-    'settings' => 'settings',
-] as $doctorSection => $doctorRouteName) {
-    Route::get('/medecin/'.$doctorSection, function () use ($doctorSection) {
-        $parameters = ['section' => $doctorSection];
-        if (request()->filled('patient')) {
-            $parameters['patient'] = request()->string('patient')->value();
-        }
-
-        return to_route('doctor.dashboard', $parameters);
-    })->middleware('auth')->name('doctor.'.$doctorRouteName);
-}
-
-Route::get('/medecin/patients/{id}', function (string $id) use ($doctorForAuthenticatedUser) {
-    $doctorForAuthenticatedUser();
-    abort_unless(DB::table('PATIENT')->where('id_patient', $id)->where('id_etablissement', Auth::user()->id_etablissement)->exists(), 404);
-    return to_route('doctor.dashboard', ['section' => 'patients', 'patient' => $id]);
-})->middleware('auth')->name('doctor.patients.show');
-
-Route::get('/medecin/patients/{id}/edit', function (string $id) use ($doctorForAuthenticatedUser) {
-    $doctorForAuthenticatedUser();
-    abort_unless(DB::table('PATIENT')->where('id_patient', $id)->where('id_etablissement', Auth::user()->id_etablissement)->exists(), 404);
-    return to_route('doctor.dashboard', ['section' => 'patients', 'patient' => $id, 'edit' => 1]);
-})->middleware('auth')->name('doctor.patients.edit');
-
-Route::put('/medecin/patients/{id}', function (Request $request, string $id) use ($doctorForAuthenticatedUser) {
-    $doctorForAuthenticatedUser();
-    $patient = DB::table('PATIENT')->where('id_patient', $id)->where('id_etablissement', Auth::user()->id_etablissement)->first();
-    abort_unless($patient, 404);
+Route::put('/service/analyses/{id}/resultat', function (Request $request, string $id) {
+    abort_unless(Auth::user()?->isService(), 403);
+    $service = DB::table('SERVICE')->where('id_service', Auth::user()->id_service)->where('id_etablissement', Auth::user()->id_etablissement)->first();
+    abort_unless($service, 404);
     $validated = $request->validate([
-        'nom' => ['required', 'string', 'max:100'], 'prenom' => ['required', 'string', 'max:100'],
-        'sexe' => ['required', 'in:M,F,X'], 'date_naissance' => ['required', 'date', 'before:today'],
-        'email' => ['nullable', 'email', 'max:255', Rule::unique('PATIENT', 'email')->ignore($id, 'id_patient')],
-        'telephone' => ['nullable', 'string', 'max:30'], 'taille' => ['nullable', 'numeric', 'min:0.5', 'max:2.5'],
-        'poids' => ['nullable', 'numeric', 'min:1', 'max:500'], 'groupe_sanguin' => ['nullable', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'],
-        'contact_urgence_nom' => ['nullable', 'string', 'max:150'], 'contact_urgence_lien' => ['nullable', 'string', 'max:80'],
-        'contact_urgence_telephone' => ['nullable', 'string', 'max:30'], 'contact_urgence_email' => ['nullable', 'email', 'max:255'],
-        'contact_urgence_adresse' => ['nullable', 'string', 'max:500'],
+        'resultat' => ['required', 'string', 'max:10000'],
     ]);
-    $patientData = $validated;
-    if (Schema::hasColumn('PATIENT', 'updated_at')) {
-        $patientData['updated_at'] = now();
-    }
-    DB::table('PATIENT')->where('id_patient', $id)->update($patientData);
-    return to_route('doctor.dashboard', ['section' => 'patients', 'patient' => $id])->with('success', 'Le dossier patient a été mis à jour.');
-})->middleware('auth')->name('doctor.patients.update');
-
-Route::delete('/medecin/patients/{id}', function (string $id) use ($doctorForAuthenticatedUser) {
-    $doctorForAuthenticatedUser();
-    $deleted = DB::table('PATIENT')->where('id_patient', $id)->where('id_etablissement', Auth::user()->id_etablissement)->delete();
-    abort_unless($deleted, 404);
-    return to_route('doctor.dashboard', ['section' => 'patients'])->with('success', 'Le patient a été supprimé.');
-})->middleware('auth')->name('doctor.patients.destroy');
-
-Route::post('/medecin/consultations', function (Request $request) use ($doctorForAuthenticatedUser) {
-    $doctor = $doctorForAuthenticatedUser();
-    abort_unless(Schema::hasTable('CONSULTATION'), 503);
-    $validated = $request->validate([
-        'patient_id' => ['required', 'string', 'exists:PATIENT,id_patient'],
-        'appointment_id' => ['nullable', 'string', 'exists:RENDEZ_VOUS,id_rendez_vous'],
-        'motif' => ['nullable', 'string', 'max:1000'], 'symptomes' => ['nullable', 'string', 'max:5000'],
-        'diagnostic' => ['nullable', 'string', 'max:5000'], 'traitement' => ['nullable', 'string', 'max:5000'],
-        'observation_medicale' => ['nullable', 'string', 'max:5000'],
+    $updated = DB::table('DEMANDE_ANALYSE')->where('id_demande', $id)->where('id_service', $service->id_service)->whereNotIn('statut', ['Terminé', 'Terminee'])->update([
+        'resultat' => $validated['resultat'], 'statut' => 'Terminé', 'traitee_at' => now(), 'updated_at' => now(),
     ]);
-    $appointment = DB::table('RENDEZ_VOUS')
-        ->where('id_docteur', $doctor->id_docteur)->where('id_etablissement', Auth::user()->id_etablissement)
-        ->whereDate('date_rdv', today())->where('id_patient', $validated['patient_id'])
-        ->when($validated['appointment_id'] ?? null, fn ($query, $appointmentId) => $query->where('id_rendez_vous', $appointmentId))
-        ->orderBy('heure_rdv')->first();
-    abort_unless($appointment && $appointment->id_patient === $validated['patient_id'], 422);
-    $data = [
-        'id_consultation' => (string) Str::uuid(), 'date_consultation' => today(), 'heure' => now()->format('H:i:s'),
-        'motif' => $validated['motif'] ?? null, 'symptomes' => $validated['symptomes'] ?? null,
-        'diagnostic' => $validated['diagnostic'] ?? null, 'traitement' => $validated['traitement'] ?? null,
-        'observation_medicale' => $validated['observation_medicale'] ?? null, 'id_patient' => $validated['patient_id'],
-        'id_docteur' => $doctor->id_docteur,
-    ];
-    if (Schema::hasColumn('CONSULTATION', 'id_etablissement')) $data['id_etablissement'] = Auth::user()->id_etablissement;
-    if (Schema::hasColumn('CONSULTATION', 'id_rendez_vous')) $data['id_rendez_vous'] = $appointment->id_rendez_vous;
-    if (Schema::hasColumn('CONSULTATION', 'created_at')) $data['created_at'] = now();
-    if (Schema::hasColumn('CONSULTATION', 'updated_at')) $data['updated_at'] = now();
-    DB::table('CONSULTATION')->insert($data);
-    DB::table('RENDEZ_VOUS')->where('id_rendez_vous', $appointment->id_rendez_vous)->update(['statut' => 'Terminé', 'updated_at' => now()]);
-    return to_route('doctor.dashboard', ['section' => 'consultations'])->with('success', 'La consultation a été enregistrée.');
-})->middleware('auth')->name('doctor.consultations.store');
-
-Route::post('/medecin/analyses', function (Request $request) use ($doctorForAuthenticatedUser) {
-    $doctor = $doctorForAuthenticatedUser();
-    abort_unless(Schema::hasTable('ANALYSE') && Schema::hasTable('SERVICE'), 503);
-    $validated = $request->validate([
-        'patient_id' => ['required', 'string', 'exists:PATIENT,id_patient'],
-        'appointment_id' => ['nullable', 'string', 'exists:RENDEZ_VOUS,id_rendez_vous'],
-        'service_id' => ['required', 'string', 'exists:SERVICE,id_service'],
-        'type_analyse' => ['required', 'string', 'max:150'], 'prescription' => ['nullable', 'string', 'max:5000'],
-        'observation' => ['nullable', 'string', 'max:5000'], 'priorite' => ['required', 'in:Normale,Urgente'],
-    ]);
-    $appointment = DB::table('RENDEZ_VOUS')
-        ->where('id_docteur', $doctor->id_docteur)->where('id_etablissement', Auth::user()->id_etablissement)
-        ->whereDate('date_rdv', today())->where('id_patient', $validated['patient_id'])
-        ->when($validated['appointment_id'] ?? null, fn ($query, $appointmentId) => $query->where('id_rendez_vous', $appointmentId))
-        ->orderBy('heure_rdv')->first();
-    $service = DB::table('SERVICE')->where('id_service', $validated['service_id'])
-        ->where('id_etablissement', Auth::user()->id_etablissement)->first();
-    abort_unless($appointment && $service, 422);
-    $data = [
-        'id_analyse' => (string) Str::uuid(), 'date_analyse' => today(), 'type_analyse' => $validated['type_analyse'],
-        'prescription' => $validated['prescription'] ?? null, 'observation' => $validated['observation'] ?? null,
-        'statut' => 'Prescrite', 'priorite' => $validated['priorite'], 'id_patient' => $validated['patient_id'],
-        'id_docteur' => $doctor->id_docteur, 'id_service' => $service->id_service,
-    ];
-    if (Schema::hasColumn('ANALYSE', 'id_etablissement')) $data['id_etablissement'] = Auth::user()->id_etablissement;
-    if (Schema::hasColumn('ANALYSE', 'id_rendez_vous')) $data['id_rendez_vous'] = $appointment->id_rendez_vous;
-    if (Schema::hasColumn('ANALYSE', 'created_at')) $data['created_at'] = now();
-    if (Schema::hasColumn('ANALYSE', 'updated_at')) $data['updated_at'] = now();
-    DB::table('ANALYSE')->insert($data);
-    return to_route('doctor.dashboard', ['section' => 'analyses'])->with('success', 'La demande d’analyse a été enregistrée.');
-})->middleware('auth')->name('doctor.analyses.store');
-
-Route::put('/medecin/parametres', function (Request $request) use ($doctorForAuthenticatedUser) {
-    $doctor = $doctorForAuthenticatedUser();
-    $validated = $request->validate([
-        'nom' => ['required', 'string', 'max:100'], 'prenom' => ['required', 'string', 'max:100'],
-        'specialite' => ['nullable', 'string', 'max:100'], 'telephone' => ['nullable', 'string', 'max:30'],
-        'email' => ['required', 'email', 'max:255'], 'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-    ]);
-    $emailTaken = DB::table('DOCTEUR')->whereRaw('LOWER(email) = ?', [mb_strtolower($validated['email'])])
-        ->where('id_docteur', '!=', $doctor->id_docteur)->exists();
-    if (! $emailTaken && Schema::hasTable('UTILISATEUR')) {
-        $emailTaken = DB::table('UTILISATEUR')->whereRaw('LOWER(email) = ?', [mb_strtolower($validated['email'])])
-            ->when(Schema::hasColumn('DOCTEUR', 'id_user') && $doctor->id_user, fn ($query) => $query->where('id_user', '!=', $doctor->id_user))
-            ->exists();
-    }
-    abort_if($emailTaken, 422, 'Cette adresse email est déjà utilisée.');
-    $doctorData = collect($validated)->except('password')->all();
-    DB::table('DOCTEUR')->where('id_docteur', $doctor->id_docteur)->update($doctorData);
-    if (Schema::hasColumn('DOCTEUR', 'id_user') && $doctor->id_user) {
-        $userData = ['nom' => $validated['nom'], 'prenom' => $validated['prenom'], 'email' => $validated['email']];
-        if (! empty($validated['password'])) $userData['mot_de_passe'] = Hash::make($validated['password']);
-        DB::table('UTILISATEUR')->where('id_user', $doctor->id_user)->update($userData);
-    }
-    return to_route('doctor.dashboard', ['section' => 'settings'])->with('success', 'Vos paramètres ont été enregistrés.');
-})->middleware('auth')->name('doctor.settings.update');
+    abort_unless($updated, 404);
+    return to_route('service.dashboard', ['section' => 'analyses'])->with('success', 'Le résultat a été enregistré.');
+})->middleware('auth')->name('service.analyses.resultat');
 
 Route::get('/admin/patients/create', function () {
     abort_unless(Auth::user()?->isAdministrator(), 403);
