@@ -1,6 +1,8 @@
 FROM php:8.4-apache
 
 RUN apt-get update && apt-get install -y \
+    nodejs \
+    npm \
     git \
     unzip \
     libzip-dev \
@@ -18,6 +20,8 @@ WORKDIR /var/www/html
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
+RUN npm install
+RUN npm run build
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
