@@ -1,31 +1,40 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative w-full pt-16 pb-24 px-marge-page overflow-hidden">
-        <div class="absolute inset-0 z-0">
-            <div class="w-full h-full bg-cover bg-center opacity-30" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAVcqWOYN-jmPVzksFQNH8TcvLt_tX1zca0-gNJO5Xt8usHo1NZaXl7ypjCyfN4tRN73MzT27dD40RBpL1DVlbKkT80JG0mKHvV5RDdASH2ncfXr008dDjhF-mpjM_4_xB8-WD_KTyxab7iwMnJlnDhP-9RjjN590oiZLibTxdcUYVN6mYV1rFPEVCGyciOYHaXAqf_pGHl_QwJqSja-sfXq-fi9-LPoo3uU4WGvA0lOQivZi4fmT4f9w')"></div>
-            <div class="absolute inset-0 bg-linear-to-b from-background/80 via-background/95 to-background"></div>
+<div class="hp-kolink-home">
+    <section class="hk-hero" data-clinic-slider aria-labelledby="hero-title">
+        <div class="hk-hero-photo">
+            <article class="hk-hero-slide is-active" data-slide aria-hidden="false"><img src="{{ asset('images/healthpass/clinic-consultation.webp') }}" alt="Médecin en consultation avec une patiente" fetchpriority="high"></article>
+            <article class="hk-hero-slide" data-slide aria-hidden="true"><img src="{{ asset('images/healthpass/clinic-team.webp') }}" alt="Équipe médicale coordonnant les soins d’un patient"></article>
+            <article class="hk-hero-slide" data-slide aria-hidden="true"><img src="{{ asset('images/healthpass/clinic-laboratory.webp') }}" alt="Professionnels dans un laboratoire médical"></article>
         </div>
-        <div class="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant mb-6">
-                <span class="material-symbols-outlined text-primary text-[16px]">verified_user</span>
-                <span class="text-xs text-on-surface-variant">Réseau Médical Certifié</span>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-bold text-on-background max-w-4xl mb-6">Trouvez votre établissement de santé en toute confiance.</h1>
-            <p class="text-lg text-on-surface-variant max-w-2xl mb-12">Accédez instantanément à des milliers de cliniques, hôpitaux et laboratoires certifiés. Un écosystème sécurisé pour votre parcours de soins.</p>
-        </div>
+        <div class="hk-hero-dark"></div><div class="hk-contours"></div><div class="hk-wedge"></div>
+        <div class="hk-hero-inner"><div class="hk-hero-copy">
+            <p class="hk-eyebrow"><span class="material-symbols-outlined">health_and_safety</span> Plateforme médicale sécurisée</p>
+            <h1 id="hero-title">Les dossiers avancent.<br>Les équipes gardent<br><em>le contrôle.</em></h1>
+            <p>HealthPass aide les établissements à gérer les patients, les rendez-vous, les consultations, les prescriptions et les analyses dans un environnement médical centralisé.</p>
+            <div class="hk-actions"><a class="hk-btn hk-btn-accent" href="{{ route('login') }}">Se connecter <span class="material-symbols-outlined">arrow_forward</span></a><a class="hk-play" href="#parcours"><span class="material-symbols-outlined">play_arrow</span>Comprendre le parcours</a></div>
+            <div class="hk-trust"><span class="hk-avatar">E</span><span class="hk-avatar">M</span><span class="hk-avatar">S</span><div><strong><span class="material-symbols-outlined">verified_user</span> Accès par profil</strong><small>Administration · Médecins · Services</small></div></div>
+        </div></div>
+        <div class="hk-slider-controls"><button type="button" data-slide-prev aria-label="Image précédente"><span class="material-symbols-outlined">arrow_back</span></button><div><button class="is-active" data-slide-to="0" aria-label="Afficher l’image 1"></button><button data-slide-to="1" aria-label="Afficher l’image 2"></button><button data-slide-to="2" aria-label="Afficher l’image 3"></button></div><button type="button" data-slide-next aria-label="Image suivante"><span class="material-symbols-outlined">arrow_forward</span></button></div>
+        <div class="hk-slide-count"><strong data-slide-count>01</strong><span>/ 03</span></div>
+        <div class="hk-record-box"><div class="hk-record-title"><span class="material-symbols-outlined">shield_person</span><div><strong>Accès HealthPass</strong><small>Administration, médecin, facturation ou patient</small></div></div><a class="hk-record-cta" href="{{ route('login') }}"><span class="material-symbols-outlined">badge</span><span>Se connecter à mon espace</span><b class="material-symbols-outlined">arrow_forward</b></a></div>
     </section>
-
-    <!-- Établissements Certifiés -->
-    <section class="w-full py-16 px-marge-page bg-surface-bright">
-        <div class="max-w-7xl mx-auto flex flex-col gap-inter-bloc">
-            <div class="flex justify-between items-end">
-                <div>
-                    <h2 class="text-3xl font-bold text-on-background mb-2">Établissements Recommandés</h2>
-                    <p class="text-base text-on-surface-variant">Sélection d'infrastructures médicales répondant aux plus hauts standards.</p>
-                </div>
-                    </section>
-
-    
+    <section class="hk-network"><div class="hk-container"><span>Un système commun pour</span><div><b>ADMINISTRATION</b><b>MÉDECINS</b><b>SERVICES</b><b>LABORATOIRES</b><b>DOSSIERS PATIENTS</b></div></div></section>
+    <section id="a-propos" class="hk-section hk-about"><div class="hk-container hk-about-grid">
+        <div class="hk-about-visual hk-about-visual--team"><div class="hk-orbit"></div><img src="{{ asset('images/healthpass/medical-team-cutout.webp') }}" alt="Médecins et professionnelle de laboratoire consultant ensemble un dossier médical sur tablette" loading="lazy"><span><strong>3 profils</strong><small>une vision commune</small></span></div>
+        <div class="hk-about-copy"><p class="hk-kicker">À PROPOS DE HEALTHPASS</p><h2>La gestion médicale,<br>avec une vision commune.</h2><p>HealthPass structure le travail de l’établissement autour d’un dossier patient identifié par NPI. Les équipes suivent les rendez-vous, consultations, prescriptions et demandes d’analyses selon leurs autorisations.</p><div class="hk-points"><div><b>01</b><span><strong>Un dossier patient centralisé</strong><small>Les informations médicales utiles réunies dans une instance unique.</small></span></div><div><b>02</b><span><strong>Des rôles clairement séparés</strong><small>Administration, médecin, facturation et patient disposent de leur propre espace.</small></span></div></div><a class="hk-btn hk-btn-dark" href="#parcours">Découvrir le fonctionnement <span class="material-symbols-outlined">arrow_forward</span></a></div>
+    </div></section>
+    <section id="parcours" class="hk-section hk-journey"><div class="hk-container hk-journey-grid">
+        <div class="hk-clinician-visual"><span class="hk-clinician-orbit"></span><img src="{{ asset('images/healthpass/doctor-workstation.webp') }}" alt="Médecin utilisant HealthPass sur son ordinateur pour suivre un dossier patient" loading="lazy"><span class="hk-clinician-chip hk-clinician-chip--top"><i class="material-symbols-outlined">clinical_notes</i><span><small>DOSSIER PATIENT</small><strong>NPI vérifié</strong></span></span><span class="hk-clinician-chip hk-clinician-chip--bottom"><i class="material-symbols-outlined">biotech</i><span><small>DEMANDE D’ANALYSE</small><strong>Transmise au service</strong></span></span></div>
+        <div class="hk-journey-copy"><p class="hk-kicker">LE PARCOURS, BIEN ORGANISÉ</p><h2>Du rendez-vous au résultat d’analyse.</h2><p>L’établissement enregistre le patient et planifie son rendez-vous. Le médecin documente la consultation, prescrit le traitement ou demande une analyse, puis le service concerné saisit le résultat.</p><ul><li><span>✓</span><strong>Patients identifiés par un NPI unique</strong></li><li><span>✓</span><strong>Consultations et prescriptions structurées</strong></li><li><span>✓</span><strong>Demandes d’analyses transmises au service</strong></li></ul><a class="hk-btn hk-btn-dark" href="{{ route('login') }}">Accéder à l’espace professionnel <span class="material-symbols-outlined">arrow_forward</span></a></div>
+    </div></section>
+    <section id="solutions" class="hk-section hk-solutions"><div class="hk-container"><div class="hk-section-head"><div><p class="hk-kicker">UN ÉCOSYSTÈME DE SOINS</p><h2>Un espace pensé<br>pour chaque acteur.</h2></div><p>Une interface adaptée à chaque rôle, avec des accès distincts et une information médicale structurée.</p></div><div class="hk-solution-grid">
+        <article><div><span class="material-symbols-outlined">local_hospital</span><small>01</small></div><h3>Administration</h3><p>L’administrateur de l’hôpital gère les utilisateurs et leurs autorisations.</p><a href="{{ route('login') }}">Accéder à l’espace <span class="material-symbols-outlined">arrow_forward</span></a></article>
+        <article><div><span class="material-symbols-outlined">stethoscope</span><small>02</small></div><h3>Médecins</h3><p>Consultations, prescriptions et demandes d’analyses rattachées au bon dossier patient.</p><a href="{{ route('login') }}">Accéder à l’espace <span class="material-symbols-outlined">arrow_forward</span></a></article>
+        <article><div><span class="material-symbols-outlined">biotech</span><small>03</small></div><h3>Services d’analyses</h3><p>Les services utilisent les identifiants délivrés par l’administration de l’hôpital.</p><a href="{{ route('login') }}">Accéder à l’espace <span class="material-symbols-outlined">arrow_forward</span></a></article>
+    </div></div></section>
+    <section class="hk-proof"><div class="hk-container"><div><p class="hk-kicker">NOTRE ENGAGEMENT</p><h2>La confiance au cœur<br>de chaque soin.</h2><p>HealthPass est conçu autour de principes essentiels au monde médical.</p></div><div class="hk-proof-grid"><article><span>01</span><strong class="material-symbols-outlined">shield_lock</strong><b>Confidentialité</b><small>Accès selon le rôle de chacun</small></article><article><span>02</span><strong class="material-symbols-outlined">hub</strong><b>Continuité</b><small>Information disponible au bon moment</small></article><article><span>03</span><strong class="material-symbols-outlined">fact_check</strong><b>Traçabilité</b><small>Actions et documents structurés</small></article></div></div></section>
+    <section id="contact" class="hk-final"><div class="hk-container"><div><p class="hk-kicker">PRÊT À COMMENCER ?</p><h2>Centralisez la gestion médicale de votre établissement.</h2><p>L’administrateur de l’hôpital crée les comptes du personnel depuis son espace sécurisé.</p></div><a class="hk-btn hk-btn-accent" href="{{ route('login') }}">Se connecter <span class="material-symbols-outlined">arrow_forward</span></a><i></i><i></i></div></section>
+</div>
 @endsection

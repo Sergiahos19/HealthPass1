@@ -6,113 +6,13 @@
     <title>HealthPass - Analyses</title>
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
-    <!-- Tailwind Config Injection -->
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "on-secondary": "#ffffff",
-                        "secondary-fixed": "#cce5ff",
-                        "acces-temporaire": "#D97706",
-                        "surface-container-high": "#dde9ff",
-                        "outline-variant": "#bec8cd",
-                        "on-tertiary-fixed-variant": "#693c00",
-                        "on-primary-fixed-variant": "#004d62",
-                        "surface": "#f8f9ff",
-                        "on-primary-fixed": "#001f29",
-                        "surface-container-low": "#eff4ff",
-                        "tertiary-container": "#965e1c",
-                        "tertiary": "#794602",
-                        "error-container": "#ffdad6",
-                        "primary-fixed": "#b9eaff",
-                        "inverse-on-surface": "#ebf1ff",
-                        "background": "#f8f9ff",
-                        "on-surface": "#0d1c2f",
-                        "on-background": "#0d1c2f",
-                        "on-error-container": "#93000a",
-                        "on-tertiary": "#ffffff",
-                        "surface-tint": "#006781",
-                        "secondary-fixed-dim": "#93ccff",
-                        "inverse-surface": "#233144",
-                        "on-secondary-container": "#00476e",
-                        "surface-container-lowest": "#ffffff",
-                        "primary": "#005a71",
-                        "on-primary": "#ffffff",
-                        "fond-page": "#F8FAFC",
-                        "on-tertiary-fixed": "#2c1600",
-                        "primary-fixed-dim": "#81d1f0",
-                        "primary-container": "#0e7490",
-                        "surface-container": "#e6eeff",
-                        "on-secondary-fixed": "#001d31",
-                        "surface-dim": "#ccdbf4",
-                        "error": "#ba1a1a",
-                        "surface-variant": "#d5e3fd",
-                        "on-error": "#ffffff",
-                        "surface-bright": "#f8f9ff",
-                        "on-tertiary-container": "#ffe8d6",
-                        "succes-biometrie": "#059669",
-                        "tertiary-fixed": "#ffdcbd",
-                        "alerte-critique": "#DC2626",
-                        "bordure-douce": "#F1F5F9",
-                        "inverse-primary": "#81d1f0",
-                        "surface-container-highest": "#d5e3fd",
-                        "on-primary-container": "#d3f1ff",
-                        "tertiary-fixed-dim": "#ffb86f",
-                        "secondary-container": "#5bb8fe",
-                        "on-secondary-fixed-variant": "#004b73",
-                        "on-surface-variant": "#3f484c",
-                        "outline": "#6f787d",
-                        "secondary": "#006398"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    spacing: {
-                        "espacement-section": "24px",
-                        "marge-page": "24px",
-                        "gouttiere": "16px",
-                        "padding-carte": "20px"
-                    },
-                    fontFamily: {
-                        "label-fort": ["Inter"],
-                        "titre-ecran-mobile": ["Plus Jakarta Sans"],
-                        "titre-section": ["Plus Jakarta Sans"],
-                        "corps-standard": ["Inter"],
-                        "sous-titre": ["Plus Jakarta Sans"],
-                        "mention-legale": ["Inter"],
-                        "titre-ecran": ["Plus Jakarta Sans"],
-                        "corps-dense": ["Inter"]
-                    },
-                    fontSize: {
-                        "label-fort": ["14px", { lineHeight: "16px", fontWeight: "600" }],
-                        "titre-ecran-mobile": ["24px", { lineHeight: "30px", fontWeight: "700" }],
-                        "titre-section": ["20px", { lineHeight: "28px", fontWeight: "600" }],
-                        "corps-standard": ["15px", { lineHeight: "22px", fontWeight: "400" }],
-                        "sous-titre": ["17px", { lineHeight: "24px", fontWeight: "600" }],
-                        "mention-legale": ["12px", { lineHeight: "16px", fontWeight: "400" }],
-                        "titre-ecran": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }],
-                        "corps-dense": ["13px", { lineHeight: "18px", fontWeight: "400" }]
-                    },
-                    boxShadow: {
-                        'carte-medicale': '0px 4px 12px rgba(51, 65, 85, 0.05)'
-                    }
-                }
-            }
-        }
-    </script>
 </head>
-<body class="bg-fond-page text-on-surface font-corps-standard h-screen flex flex-col overflow-hidden">
+<body class="hp-workspace hp-workspace-service bg-fond-page text-on-surface font-corps-standard h-screen flex flex-col overflow-hidden">
 
     <!-- TopNavBar -->
     <header class="w-full flex justify-between items-center px-marge-page h-16 bg-surface border-b border-bordure-douce shadow-sm shrink-0">

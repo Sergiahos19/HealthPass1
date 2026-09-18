@@ -29,6 +29,8 @@ return new class extends Migration
                 $table->string('id_format', 42);
                 $table->string('priorite', 20)->default('Normale');
                 $table->string('statut', 30)->default('En attente');
+                $table->text('prescription')->nullable();
+                $table->text('observation')->nullable();
                 $table->text('resultat')->nullable();
                 $table->string('fichier_resultat')->nullable();
                 $table->timestamp('demande_at');

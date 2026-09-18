@@ -1,16 +1,27 @@
-<nav class="sticky top-0 w-full z-50 flex justify-between items-center gap-3 px-marge-page py-unite-base bg-surface-container-lowest border-b border-outline-variant shadow-sm min-h-16">
-    <div class="flex items-center gap-inter-bloc">
-        <a class="flex items-center gap-2 active:scale-95 duration-150" href="{{ url('/') }}">
-            <span class="material-symbols-outlined icon-fill text-primary text-[28px]"></span>
-            <span class="font-bold text-xl text-primary">HealthPass</span>
+<header class="hp-site-header hk-header" data-site-header>
+    <div class="hk-topbar"><div class="hk-header-wide"><div class="hk-topbar-left"><a href="tel:+2290156036800"><span class="material-symbols-outlined">phone</span>+229 01 56 03 68 00</a><a href="mailto:healthpass19@gmail.com"><span class="material-symbols-outlined">mail</span>healthpass19@gmail.com</a><span><span class="material-symbols-outlined">location_on</span>Cotonou, Bénin</span></div><div class="hk-topbar-right"><span><span class="material-symbols-outlined">schedule</span>Assistance médicale · 7j/7</span></div></div></div>
+    <nav class="hp-site-nav hk-main-nav" aria-label="Navigation principale">
+        <a class="hp-brand" href="{{ route('home') }}" aria-label="HealthPass — Accueil">
+            <span class="hp-brand-mark"><span class="material-symbols-outlined" aria-hidden="true">health_and_safety</span></span>
+            <span>HealthPass<span class="hp-brand-dot">.</span></span>
         </a>
-    </div>
-    <div class="hidden lg:flex items-center gap-inter-bloc">
-        <a class="text-base text-on-surface-variant hover:text-primary transition-colors active:scale-95 duration-150" href="#">À propos</a>
-        <a class="text-base text-on-surface-variant hover:text-primary transition-colors active:scale-95 duration-150" href="#">Contact</a>
-    </div>
-    <div class="flex items-center gap-inter-element">
-        <a class="hidden sm:block font-semibold text-sm text-on-surface-variant px-4 py-2 hover:bg-surface-container-low rounded-lg transition-colors active:scale-95 duration-150" href="{{ route('login') }}">Connexion</a>
-        <a class="font-semibold text-sm bg-primary text-on-primary px-4 sm:px-5 py-2 rounded-lg hover:bg-surface-tint shadow-sm transition-colors active:scale-95 duration-150" href="{{ route('register') }}">Inscription</a>
-    </div>
-</nav>
+        <div class="hp-nav-links" id="mobile-menu" data-mobile-menu>
+            <a href="{{ route('home') }}">Accueil</a>
+            <a href="{{ url('/#a-propos') }}">À propos</a>
+            <a href="{{ url('/#parcours') }}">Comment ça marche</a>
+            <a href="{{ url('/#solutions') }}">Nos espaces</a>
+            <a href="{{ url('/#contact') }}">Contact</a>
+            @auth
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button class="hp-nav-cta" type="submit">Déconnexion <span class="material-symbols-outlined" aria-hidden="true">logout</span></button>
+                </form>
+            @else
+                <a class="hp-nav-cta" href="{{ route('login') }}">Connexion <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+            @endauth
+        </div>
+        <button class="hp-menu-button" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+            <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+        </button>
+    </nav>
+</header>

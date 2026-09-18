@@ -7,6 +7,12 @@
         <div class="flex items-center rounded-lg border border-outline-variant bg-surface-container-lowest p-1 shadow-sm">
             <a href="{{ route('admin.dashboard', ['section' => 'rendez-vous', 'periode' => 'today']) }}" class="rounded px-3 py-2 font-label-fort text-label-fort {{ $periode === 'today' ? 'bg-surface-variant text-on-surface' : 'text-on-surface-variant hover:text-primary' }}">Aujourd'hui</a>
             <a href="{{ route('admin.dashboard', ['section' => 'rendez-vous', 'periode' => 'week']) }}" class="rounded px-3 py-2 font-label-fort text-label-fort {{ $periode === 'week' ? 'bg-surface-variant text-on-surface' : 'text-on-surface-variant hover:text-primary' }}">Semaine</a>
+            <form method="GET" action="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-2">
+                <input type="hidden" name="section" value="rendez-vous">
+                <input type="hidden" name="periode" value="date">
+                <input type="date" name="date" min="{{ today()->format('Y-m-d') }}" value="{{ $periode === 'date' ? request('date') : today()->format('Y-m-d') }}" class="rounded border border-outline-variant px-2 py-1 text-sm">
+                <button type="submit" class="rounded bg-primary px-3 py-2 text-xs font-semibold text-on-primary">Filtrer</button>
+            </form>
         </div>
     </div>
 
@@ -23,13 +29,13 @@
             <div class="flex items-end justify-between">
                 <h4 class="flex items-center gap-2 font-titre-md text-titre-md text-on-surface">
                     <span class="material-symbols-outlined text-primary">calendar_month</span>
-                    {{ $periode === 'week' ? 'Rendez-vous de la semaine' : "Rendez-vous du jour" }}
+                    Rendez-vous
                 </h4>
                 <span class="font-label-fort text-label-fort text-primary">{{ $rendezVous->count() }} rendez-vous</span>
             </div>
             <div class="overflow-hidden rounded-xl border border-outline-variant/50 bg-surface-container-lowest">
                 <div class="border-b border-outline-variant/30 px-5 py-4">
-                    <p class="font-label-fort text-label-fort text-on-surface">{{ $periode === 'week' ? 'Cette semaine' : "Aujourd'hui" }}</p>
+                    <p class="font-label-fort text-label-fort text-on-surface">Rendez-vous</p>
                 </div>
                 <div class="divide-y divide-outline-variant/30">
                     @forelse ($rendezVous as $rendezVousItem)
@@ -48,8 +54,8 @@
                                 </div>
                             </div>
                             <div class="flex shrink-0 items-center gap-2">
-                                <a href="{{ route('admin.dashboard', ['section' => 'rendez-vous', 'periode' => $periode, 'edit' => $rendezVousItem->id_rendez_vous]) }}" aria-label="Modifier ce rendez-vous" title="Modifier" class="rounded-lg p-2 text-secondary hover:bg-secondary-container/20"><span class="material-symbols-outlined">edit</span></a>
-                                <form action="{{ route('appointments.destroy', $rendezVousItem->id_rendez_vous) }}" method="POST">
+                                                <a href="{{ route('appointments.edit', $rendezVousItem->id_rendez_vous) }}" aria-label="Modifier ce rendez-vous" title="Modifier ce rendez-vous" class="rounded-lg p-2 text-secondary hover:bg-secondary-container/20"><span class="material-symbols-outlined">edit</span></a>
+                                <form action="{{ route('appointments.destroy', $rendezVousItem->id_rendez_vous) }}" method="POST" onsubmit="return confirm('Êtes-vous vraiment sûr de vouloir supprimer ce rendez-vous ? Cette action est irréversible.')">
                                     @csrf @method('DELETE')
                                     <button type="submit" aria-label="Supprimer ce rendez-vous" title="Supprimer" class="rounded-lg p-2 text-error hover:bg-error-container/40"><span class="material-symbols-outlined">delete</span></button>
                                 </form>
@@ -66,11 +72,12 @@
         <div class="rounded-xl border border-outline-variant/50 bg-surface-container-lowest p-6 xl:col-span-4">
             <div class="mb-5 flex items-center gap-3 border-b border-outline-variant/30 pb-4">
                 <span class="material-symbols-outlined text-primary">add_circle</span>
-                <h4 class="font-titre-sm text-titre-sm text-on-surface">Nouveau rendez-vous</h4>
+                <h4 class="font-titre-sm text-titre-sm text-on-surface">{{ $rendezVousEdit ? 'Modifier le rendez-vous' : 'Nouveau rendez-vous' }}</h4>
             </div>
-            <form action="{{ $rendezVousEdit ? route('appointments.update', $rendezVousEdit->id_rendez_vous) : route('appointments.store') }}" method="POST" class="space-y-4">
+            <form action="{{ $rendezVousEdit ? route('appointments.update', $rendezVousEdit->id_rendez_vous) : route('appointments.store') }}" method="POST" class="space-y-4" @if ($rendezVousEdit) onsubmit="return confirm('Êtes-vous vraiment sûr de vouloir enregistrer ces modifications ? Cette action est irréversible.')" @endif>
                 @csrf
                 @if ($rendezVousEdit) @method('PUT') @endif
+                <input type="hidden" name="periode" value="{{ $periode }}">
                 <div>
                     <label class="mb-2 block font-label-fort text-label-fort text-on-surface-variant" for="patient_id">Patient</label>
                     <select id="patient_id" name="patient_id" class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-3 text-on-surface">
@@ -91,7 +98,7 @@
                 </div>
                 <div>
                     <label class="mb-2 block font-label-fort text-label-fort text-on-surface-variant" for="date">Date</label>
-                    <input id="date" name="date" type="date" value="{{ old('date', $rendezVousEdit?->date_rdv) }}" class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-3 text-on-surface">
+                    <input id="date" name="date" type="date" value="{{ old('date', $rendezVousEdit?->date_rdv ? \Illuminate\Support\Carbon::parse($rendezVousEdit->date_rdv)->format('Y-m-d') : '') }}" min="{{ today()->format('Y-m-d') }}" required class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-3 text-on-surface">
                 </div>
                 <div>
                     <label class="mb-2 block font-label-fort text-label-fort text-on-surface-variant" for="time">Heure</label>

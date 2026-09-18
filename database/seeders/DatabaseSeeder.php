@@ -17,9 +17,72 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $establishmentId = DB::table('ETABLISSEMENT')->orderBy('id_etablissement')->value('id_etablissement') ?: 'etab-demo';
+
         DB::table('ROLE')->insertOrIgnore([
             'id_role' => 'role-doctor',
             'libelle_role' => 'medecin',
+        ]);
+        DB::table('ROLE')->insertOrIgnore([
+            'id_role' => 'role-service',
+            'libelle_role' => 'service',
+        ]);
+        DB::table('ROLE')->insertOrIgnore([
+            'id_role' => 'role-cashier',
+            'libelle_role' => 'caissier / facturation',
+        ]);
+        DB::table('ROLE')->insertOrIgnore([
+            'id_role' => 'role-patient',
+            'libelle_role' => 'patient',
+        ]);
+        DB::table('UTILISATEUR')->updateOrInsert(
+            ['email' => 'caissier@healthpass.test'],
+            [
+                'id_user' => 'user-cashier-demo',
+                'nom' => 'Caissier',
+                'prenom' => 'Demo',
+                'mot_de_passe' => Hash::make('Caissier@12345'),
+                'id_role' => 'role-cashier',
+                'id_etablissement' => $establishmentId,
+            ]
+        );
+
+        $serviceData = [
+            'nom_service' => 'Laboratoire Central',
+            'type_service' => 'Laboratoire',
+            'telephone' => '+229 21 00 00 00',
+            'email' => 'laboratoire@healthpass.test',
+            'id_etablissement' => $establishmentId,
+            'batiment' => 'Pavillon A',
+            'etage' => '1er étage',
+            'chef_prenom' => '',
+            'chef_nom' => 'Kelly',
+            'mot_de_passe' => Hash::make('Service@12345'),
+        ];
+        if (Schema::hasColumn('SERVICE', 'est_approuve')) {
+            $serviceData['est_approuve'] = true;
+        }
+        DB::table('SERVICE')->updateOrInsert(
+            ['id_service' => 'service-demo'],
+            $serviceData
+        );
+        DB::table('UTILISATEUR')->updateOrInsert(
+            ['id_user' => 'user-service-demo'],
+            [
+                'nom' => 'Kelly',
+                'prenom' => '',
+                'email' => 'laboratoire@healthpass.test',
+                'mot_de_passe' => Hash::make('Service@12345'),
+                'id_role' => 'role-service',
+                'id_etablissement' => $establishmentId,
+                'id_service' => 'service-demo',
+            ]
+        );
+
+        DB::table('UTILISATEUR')->where('id_user', 'user-admin-demo')->update([
+            'email' => 'admin@healthpass.test',
+            'nom' => 'Sergio.Kelly',
+            'prenom' => 'Admin',
         ]);
 
         DB::table('UTILISATEUR')->updateOrInsert(
@@ -30,7 +93,7 @@ class DatabaseSeeder extends Seeder
                 'prenom' => 'Sergio',
                 'mot_de_passe' => Hash::make('Medecin@12345'),
                 'id_role' => 'role-doctor',
-                'id_etablissement' => 'etab-demo',
+                'id_etablissement' => $establishmentId,
             ]
         );
 
@@ -48,7 +111,7 @@ class DatabaseSeeder extends Seeder
                 'specialite' => 'Médecine Générale',
                 'telephone' => '+229 97 00 00 00',
                 'mot_de_passe' => Hash::make('Medecin@12345'),
-                'id_etablissement' => 'etab-demo',
+                'id_etablissement' => $establishmentId,
                 'est_approuve' => true,
             ]
         );
@@ -60,9 +123,9 @@ class DatabaseSeeder extends Seeder
             'prenom' => 'Exaucé',
             'sexe' => 'M',
             'date_naissance' => '1992-05-14',
-            'email' => 'sergio.exauce@healthpass.test',
+            'email' => 'sergioahossi19@gmail.com',
             'telephone' => '+229 97 45 18 62',
-            'id_etablissement' => 'etab-demo',
+            'id_etablissement' => $establishmentId,
         ];
 
         if (Schema::hasColumn('PATIENT', 'taille')) {
@@ -81,19 +144,37 @@ class DatabaseSeeder extends Seeder
             $patient
         );
 
+        if (Schema::hasColumn('PATIENT', 'id_user')) {
+            DB::table('UTILISATEUR')->updateOrInsert(
+                ['email' => $patient['email']],
+                [
+                    'id_user' => 'user-patient-demo',
+                    'nom' => $patient['nom'],
+                    'prenom' => $patient['prenom'],
+                    'mot_de_passe' => Hash::make('Patient@12345'),
+                    'id_role' => 'role-patient',
+                    'id_etablissement' => $establishmentId,
+                ]
+            );
+            DB::table('PATIENT')->where('id_patient', $patient['id_patient'])->update([
+                'id_user' => DB::table('UTILISATEUR')->where('email', $patient['email'])->value('id_user'),
+            ]);
+        }
+
         if (Schema::hasTable('RENDEZ_VOUS')) {
             DB::table('RENDEZ_VOUS')->updateOrInsert(
                 ['id_rendez_vous' => 'rdv-sergio-exauce-demo'],
                 [
                     'id_patient' => $patient['id_patient'],
                     'id_docteur' => 'doctor-demo',
-                    'id_etablissement' => 'etab-demo',
+                    'id_etablissement' => $establishmentId,
                     'date_rdv' => today(),
-                    'heure_rdv' => '09:30',
-                    'motif' => 'Consultation de suivi',
+                    'heure_rdv' => '14:00',
+                    'motif' => 'Consultation de démonstration',
                     'statut' => 'Planifié',
                 ]
             );
         }
+
     }
 }

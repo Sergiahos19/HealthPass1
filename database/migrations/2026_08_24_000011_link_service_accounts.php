@@ -26,14 +26,14 @@ return new class extends Migration
             'id_etablissement' => 'etab-demo',
             'batiment' => 'Pavillon A',
             'etage' => '1er étage',
-            'chef_prenom' => 'Sophie',
-            'chef_nom' => 'Mensah',
+            'chef_prenom' => '',
+            'chef_nom' => 'Kelly',
             'mot_de_passe' => Hash::make('Service@12345'),
         ]);
         DB::table('UTILISATEUR')->insertOrIgnore([
             'id_user' => 'user-service-demo',
-            'nom' => 'Mensah',
-            'prenom' => 'Sophie',
+            'nom' => 'Kelly',
+            'prenom' => '',
             'email' => 'laboratoire@healthpass.test',
             'mot_de_passe' => Hash::make('Service@12345'),
             'id_role' => 'role-service',

@@ -46,15 +46,15 @@ return new class extends Migration
             'id_etablissement' => 'etab-demo',
             'nom_etablissement' => 'Etablissement de demonstration',
             'adresse' => 'Cotonou',
-            'email_etablissement' => 'contact@healthpass.test',
+            'email_etablissement' => 'healthpass19@gmail.com',
             'numero_ifu' => 'IFU-DEMO-001',
             'est_approuve' => true,
         ]);
 
         DB::table('UTILISATEUR')->insert([
             'id_user' => 'user-admin-demo',
-            'nom' => 'Administrateur',
-            'prenom' => 'Demo',
+            'nom' => 'Sergio.Kelly',
+            'prenom' => 'Admin',
             'email' => 'admin@healthpass.test',
             'mot_de_passe' => Hash::make('Admin@12345'),
             'id_role' => 'role-admin',

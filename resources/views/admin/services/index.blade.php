@@ -1,3 +1,6 @@
+@php
+    $servicesActifs = $services->where('est_approuve', true)->count();
+@endphp
 <div class="space-y-8">
     <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
@@ -19,7 +22,7 @@
         </div>
         <div class="dashboard-card rounded-xl border border-bordure-douce bg-surface p-6">
             <div class="flex items-start justify-between">
-                <div><p class="font-corps-dense text-corps-dense uppercase text-on-surface-variant">Départements actifs</p><h3 class="mt-2 font-titre-ecran text-titre-ecran text-secondary">{{ $services->count() }}</h3></div>
+                <div><p class="font-corps-dense text-corps-dense uppercase text-on-surface-variant">Départements actifs</p><h3 class="mt-2 font-titre-ecran text-titre-ecran text-secondary">{{ $servicesActifs }}</h3></div>
                 <span class="material-symbols-outlined rounded-full bg-secondary-fixed p-3 text-secondary">domain</span>
             </div>
         </div>
@@ -49,7 +52,14 @@
                         <tr class="border-b border-bordure-douce transition-colors hover:bg-fond-page">
                             <td class="px-6 py-4"><div class="flex items-center gap-3"><span class="material-symbols-outlined rounded-full bg-surface-container p-2 text-primary">local_hospital</span><span class="font-label-fort text-label-fort">{{ $service->nom_service }}</span></div></td>
                             <td class="px-6 py-4">{{ $service->type_service ?: 'Non renseigné' }}</td><td class="px-6 py-4">{{ $service->telephone ?: 'Non renseigné' }}</td><td class="px-6 py-4">{{ $service->email ?: 'Non renseigné' }}</td>
-                            <td class="px-6 py-4 text-right"><a href="{{ route('admin.dashboard', ['section' => 'services', 'edit' => $service->id_service]) }}" aria-label="Modifier ce service" title="Modifier" class="rounded-lg p-2 text-secondary hover:bg-secondary-container/20"><span class="material-symbols-outlined">edit</span></a><form action="{{ route('services.destroy', $service->id_service) }}" method="POST" class="inline">@csrf @method('DELETE')<button type="submit" aria-label="Supprimer ce service" title="Supprimer" class="ml-2 rounded-lg p-2 text-error hover:bg-error-container/40"><span class="material-symbols-outlined">delete</span></button></form></td>
+                            <td class="px-6 py-4 text-right">
+                                @if (($service->est_approuve ?? false))
+                                    <span class="mr-2 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Actif</span>
+                                @else
+                                    <span class="mr-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Inactif</span>
+                                    <form action="{{ route('services.approve', $service->id_service) }}" method="POST" class="inline">@csrf @method('PATCH')<button type="submit" class="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-on-primary">Approuver</button></form>
+                                @endif
+                                <a href="{{ route('admin.dashboard', ['section' => 'services', 'edit' => $service->id_service]) }}" aria-label="Modifier ce service" title="Modifier" class="rounded-lg p-2 text-secondary hover:bg-secondary-container/20"><span class="material-symbols-outlined">edit</span></a><form action="{{ route('services.destroy', $service->id_service) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous vraiment sûr de vouloir supprimer ce service ? Cette action est irréversible.')">@csrf @method('DELETE')<button type="submit" aria-label="Supprimer ce service" title="Supprimer" class="ml-2 rounded-lg p-2 text-error hover:bg-error-container/40"><span class="material-symbols-outlined">delete</span></button></form></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="px-6 py-10 text-center text-on-surface-variant">Aucun service enregistré.</td></tr>

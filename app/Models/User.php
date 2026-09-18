@@ -28,7 +28,7 @@ class User extends Authenticatable
     public $timestamps = false;
 
     protected $fillable = [
-        'id_user', 'nom', 'prenom', 'email', 'mot_de_passe', 'id_role', 'id_etablissement',
+        'id_user', 'nom', 'prenom', 'email', 'mot_de_passe', 'id_role', 'id_etablissement', 'doit_changer_mot_de_passe',
     ];
 
     protected $hidden = ['mot_de_passe'];
@@ -53,9 +53,29 @@ class User extends Authenticatable
         return $this->id_role === 'role-service';
     }
 
+    public function isCashier(): bool
+    {
+        return $this->id_role === 'role-cashier';
+    }
+
+    public function isBilling(): bool
+    {
+        return $this->isCashier();
+    }
+
+    public function isPatient(): bool
+    {
+        return $this->id_role === 'role-patient';
+    }
+
     public function isDoctor(): bool
     {
         return $this->id_role === 'role-doctor';
+    }
+
+    public function mustChangePassword(): bool
+    {
+        return (bool) $this->doit_changer_mot_de_passe;
     }
 
     /**
@@ -67,7 +87,6 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 }

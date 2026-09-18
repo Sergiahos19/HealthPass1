@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import 'tailwindcss';
 
@@ -64,19 +63,19 @@
   --text-corps-standard: 1rem;
   --text-corps-dense: 0.875rem;
   --text-label-fort: 0.875rem;
-  --font-titre-ecran: 'Plus Jakarta Sans', sans-serif;
-  --font-titre-section: 'Plus Jakarta Sans', sans-serif;
-  --font-corps-standard: 'Inter', sans-serif;
-  --font-corps-dense: 'Inter', sans-serif;
-  --font-label-fort: 'Inter', sans-serif;
+  --font-titre-ecran: 'Segoe UI', Arial, sans-serif;
+  --font-titre-section: 'Segoe UI', Arial, sans-serif;
+  --font-corps-standard: 'Segoe UI', Arial, sans-serif;
+  --font-corps-dense: 'Segoe UI', Arial, sans-serif;
+  --font-label-fort: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 .material-symbols-outlined {
@@ -98,4 +97,767 @@ h1, h2, h3, h4, h5, h6 {
 
 .shadow-medical-hover:hover {
   transform: translateY(-2px);
+}
+/* Public HealthPass design system. Scoped to preserve clinical workspaces. */
+@theme {
+  --text-mention: .75rem;
+  --text-corps-sm: .875rem;
+  --text-corps-md: 1rem;
+  --text-corps-lg: 1.125rem;
+  --text-label-bold: .875rem;
+  --text-titre-sm: 1.25rem;
+  --text-titre-md: 1.5rem;
+  --text-titre-lg: 2rem;
+  --text-titre-xl: 2.5rem;
+}
+
+/* Tokens des espaces de travail (dashboards).
+   Auparavant déclarés en double dans chaque vue via le CDN Tailwind :
+   centralisés ici pour que le build Vite génère les classes correspondantes. */
+@theme {
+  --color-ink: #0d1c2f;
+  --color-muted: #3f484c;
+  --color-line: #e2e8f0;
+  --color-page-bg: #f8fafc;
+  --color-fond-page: #f8fafc;
+  --color-success: #059669;
+  --color-danger: #ba1a1a;
+  --color-succes-biometrie: #059669;
+  --color-alerte-critique: #dc2626;
+  --color-acces-temporaire: #d97706;
+
+  --font-sans: 'Segoe UI', Arial, sans-serif;
+  --font-display: 'Segoe UI', Arial, sans-serif;
+  --font-mention: 'Segoe UI', Arial, sans-serif;
+  --font-corps-sm: 'Segoe UI', Arial, sans-serif;
+  --font-corps-md: 'Segoe UI', Arial, sans-serif;
+  --font-corps-lg: 'Segoe UI', Arial, sans-serif;
+  --font-label-bold: 'Segoe UI', Arial, sans-serif;
+  --font-mention-legale: 'Segoe UI', Arial, sans-serif;
+  --font-titre-sm: 'Segoe UI', Arial, sans-serif;
+  --font-titre-md: 'Segoe UI', Arial, sans-serif;
+  --font-titre-lg: 'Segoe UI', Arial, sans-serif;
+  --font-titre-xl: 'Segoe UI', Arial, sans-serif;
+  --font-sous-titre: 'Segoe UI', Arial, sans-serif;
+  --font-titre-ecran-mobile: 'Segoe UI', Arial, sans-serif;
+
+  --text-sous-titre: 1.125rem;
+  --text-mention-legale: .75rem;
+  --text-titre-ecran-mobile: 1.5rem;
+}
+.hp-public {
+  --color-primary: #182e46;
+  --color-primary-container: #284661;
+  --color-surface-tint: #284661;
+  --color-on-primary-fixed: #182e46;
+  --color-primary-fixed: #e4d7bb;
+  --color-on-primary-container: #f4efe5;
+  --color-on-tertiary-container: #e4d7bb;
+  --color-secondary: #182e46;
+  --color-tertiary: #74603d;
+  --color-background: #faf9f6;
+  --color-surface: #faf9f6;
+  --color-surface-bright: #f1f0eb;
+  --color-surface-container-low: #f4f3ef;
+  --color-surface-container-highest: #f0ede5;
+  --color-surface-variant: #e4e5e3;
+  --color-outline-variant: #dadddf;
+  --color-on-background: #182e46;
+  --color-on-surface: #182e46;
+  --color-on-surface-variant: #586574;
+  --color-outline: #586574;
+  background: #faf9f6;
+  color: #182e46;
+  line-height: 1.65;
+}
+.hp-public h1,.hp-public h2 { letter-spacing: -.04em; line-height: 1.18; }
+.hp-public h3 { letter-spacing: -.02em; font-weight: 600; }
+.hp-public .font-label-bold { font-weight: 600; }
+.hp-public .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+.hp-public :is(a,button,input,select,textarea):focus-visible { outline: 3px solid #957942; outline-offset: 4px; }
+.hp-public :is(input:not([type=checkbox]),select,textarea) { min-height: 50px; border: 1px solid #cbd0d4; border-radius: 8px; background: white; padding: 12px 16px; font-size: 1rem; width: 100%; transition: border-color .2s; }
+.hp-public input.pl-12 { padding-left: 48px; }
+.hp-public input:hover,.hp-public select:hover { border-color: #82909b; }
+.hp-public label { font-size: .875rem; font-weight: 500; }
+.hp-public button[type=submit] { background: #182e46; background-image: none; color: white; border-radius: 8px; box-shadow: none; transform: none; --tw-ring-shadow: 0 0 #0000; }
+.hp-public button[type=submit]:hover { background: #284661; }
+.hp-public button:disabled { opacity: .45; }
+.hp-eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: .68rem; font-weight: 600; margin-bottom: 24px; }
+.hp-home>nav { min-height: 88px; padding-inline: max(24px, calc((100vw - 1248px)/2)); box-shadow: none; background: #faf9f6; }
+.hp-hero { padding-top: 100px; padding-bottom: 100px; }
+.hp-hero h1 { font-size: clamp(2.5rem,4.4vw,4.5rem); font-weight: 600; }
+.hp-hero>div { gap: 80px; }
+.hp-hero a { padding: 15px 24px; border-radius: 8px; }
+.hp-feature-panel { padding: 36px; border-radius: 16px; box-shadow: 0 18px 50px #182e4606; }
+.hp-feature-panel>.hp-eyebrow { color: #74603d; }
+.hp-features { display: flex; flex-direction: column; gap: 0; }
+.hp-features>div { background: transparent; border-radius: 0; padding: 26px 0 26px 58px; position: relative; }
+.hp-features>div+div { border-top: 1px solid #e4e5e3; }
+.hp-features .material-symbols-outlined { position: absolute; left: 0; top: 28px; color: #74603d; }
+.hp-features h2 { margin: 0; font-size: 1.05rem; }
+.hp-home #a-propos { padding-block: 96px; scroll-margin-top: 88px; }
+.hp-home #a-propos article { padding: 32px; border-radius: 12px; background: transparent; }
+.hp-home #a-propos article>.material-symbols-outlined { color: #74603d; }
+.hp-brand { display: flex; align-items: center; gap: 10px; font-size: 25px; font-weight: 600; letter-spacing: -.04em; }
+.hp-brand-dot { color: #cfb782; margin-left: -9px; }
+.hp-login-visual { width: 47%; padding: 48px 56px; background: #182e46; color: #faf9f6; display: flex; flex-direction: column; justify-content: space-between; }
+.hp-login-visual h2 { max-width: 480px; font-size: clamp(1.8rem,2.6vw,2.75rem); }
+.hp-login-visual .hp-eyebrow { color: #cfb782; }
+.hp-visual-copy { color: #c1cbd5; margin-top: 24px; max-width: 450px; }
+.hp-visual-footer { display: flex; align-items: center; gap: 10px; font-size: .75rem; color: #c1cbd5; margin-top: 40px; }
+.hp-orbit { width: min(290px,80%); aspect-ratio: 1; border: 1px solid #ffffff20; border-radius: 50%; margin: 56px auto; position: relative; display: grid; place-items: center; }
+.hp-orbit-inner { position: absolute; inset: 35px; border: 1px solid #ffffff20; border-radius: 50%; }
+.hp-orbit-center { padding: 24px; border: 1px solid #cfb78260; border-radius: 20px; color: #cfb782; font-size: 48px; }
+.hp-orbit-node { position: absolute; background: #28415a; border: 1px solid #ffffff25; border-radius: 12px; padding: 14px; }
+.hp-node-one { top: -20px; left: 80px; }.hp-node-two { right: -20px; top: 130px; }.hp-node-three { bottom: -12px; left: 30px; }
+.hp-login .shadow-level-1 { background: transparent; border: 0; padding: 32px 0; box-shadow: none; }
+.hp-login .text-center:has(h2) { text-align: left; }
+.hp-login h2 { font-weight: 600; margin-bottom: 16px; }
+.hp-login .form-label-styled { display: block; margin-bottom: 8px; }
+.hp-login>div>div { padding: 56px; }
+.hp-back { font-size: .8rem; color: #586574; }
+.hp-signup { border-top: 1px solid #dadddf; padding-top: 24px; font-size: .875rem; }
+.hp-signup a { font-weight: 600; margin-left: 4px; }
+.hp-register>div { max-width: 1600px; margin-inline: auto; gap: 64px; grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); }
+.hp-register aside { background: #182e46; border-radius: 16px; box-shadow: none; min-height: 0; height: calc(100vh - 64px); position: sticky; top: 32px; }
+.hp-register aside>.absolute { display: none; }
+.hp-register .actor-choice { box-shadow: none; border-radius: 10px; padding: 20px; }
+.hp-register .actor-choice[aria-pressed=true] { border-color: #cfb782; background: #ffffff0d; }
+.hp-register form>section { padding-block: 12px 36px; margin-top: 32px; scroll-margin-top: 32px; }
+.hp-register form .grid { gap: 24px; }
+.hp-register form .space-y-inter-element>*+* { margin-top: 24px; }
+.hp-stepper { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 32px; list-style: none; padding: 0; }
+.hp-stepper a { display: flex; align-items: center; gap: 8px; font-size: .75rem; padding: 8px 10px; border: 1px solid #dadddf; border-radius: 6px; }
+.hp-stepper span { color: #74603d; font-weight: 600; }
+.hp-stepper a:hover { background: #f0ede5; }
+@media(max-width:1023px) { .hp-register>div { display: block; } .hp-hero>div { gap: 40px; } .hp-hero { padding-block: 56px; } }
+@media(max-width:767px) { .hp-login-visual { display: none; } .hp-login>div>div { padding: 32px 24px; } .hp-feature-panel { padding: 24px; } .hp-home>nav { min-height: 72px; } .hp-home #a-propos { padding-block: 56px; } }
+@media(prefers-reduced-motion:reduce) { .hp-public * { transition: none !important; scroll-behavior: auto !important; } }
+.hp-register>div>div { box-shadow: none; border-radius: 0; background: transparent; padding-inline: 0; }
+.hp-register aside { overflow-y: auto; }
+.hp-register aside .mb-16 { margin-bottom: 40px; }
+.hp-register aside .mt-12 { margin-top: 32px; }
+.hp-register aside .mt-auto { margin-top: 32px; }
+.hp-register-doctor main,.hp-register-service main { box-shadow: none; border: 1px solid #dadddf; border-radius: 16px; }
+
+/* Premium clinic landing page */
+.hp-clinic-hero { max-width: 1440px; margin: 0 auto; padding: 46px 32px 32px; display: grid; grid-template-columns: minmax(360px,.82fr) minmax(520px,1.18fr); gap: 64px; align-items: center; }
+.hp-clinic-hero__content { padding: 38px 0; }
+.hp-secure-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid #dadddf; border-radius: 999px; background: #fff; color: #586574; font-size: .72rem; font-weight: 600; }
+.hp-secure-badge .material-symbols-outlined { color: #74603d; font-size: 17px; }
+.hp-kicker { color: #74603d; text-transform: uppercase; letter-spacing: .18em; font-size: .7rem; font-weight: 700; }
+.hp-clinic-hero__content>.hp-kicker { margin-top: 42px; }
+.hp-clinic-hero h1 { max-width: 620px; margin-top: 14px; font-size: clamp(2.65rem,4.4vw,4.75rem); font-weight: 600; line-height: 1.04; }
+.hp-hero-copy { max-width: 600px; margin-top: 28px; color: #586574; font-size: 1.07rem; line-height: 1.8; }
+.hp-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+.hp-button { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 16px; padding: 12px 22px; border-radius: 8px; font-size: .9rem; font-weight: 600; transition: background .2s,color .2s,border-color .2s; }
+.hp-button--primary { background: #182e46; color: #fff; }
+.hp-button--primary:hover { background: #284661; }
+.hp-button--secondary { border: 1px solid #cbd0d4; background: transparent; color: #182e46; }
+.hp-button--secondary:hover { border-color: #182e46; background: #fff; }
+.hp-trust-row { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 42px; padding-top: 23px; border-top: 1px solid #e1e1dd; color: #67727d; font-size: .72rem; font-weight: 600; }
+.hp-trust-row>span { display: inline-flex; align-items: center; gap: 7px; }
+.hp-trust-row .material-symbols-outlined { color: #74603d; font-size: 17px; }
+.hp-clinic-slider { position: relative; min-width: 0; }
+.hp-clinic-slides { position: relative; aspect-ratio: 1.08/1; overflow: hidden; border-radius: 4px 64px 4px 4px; background: #e9e6df; }
+.hp-clinic-slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .65s ease,visibility .65s; }
+.hp-clinic-slide.is-active { opacity: 1; visibility: visible; }
+.hp-clinic-slide img { width: 100%; height: 100%; object-fit: cover; }
+.hp-clinic-slide:first-child img { object-position: 64% center; }
+.hp-clinic-slide::after { content: ''; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent,rgba(12,27,43,.66)); pointer-events: none; }
+.hp-slide-caption { position: absolute; z-index: 2; left: 28px; right: 28px; bottom: 26px; display: flex; align-items: flex-end; gap: 15px; color: #fff; }
+.hp-slide-caption>span { padding-right: 15px; border-right: 1px solid #ffffff60; color: #e4d7bb; font-size: .75rem; }
+.hp-slide-caption p { font-size: .76rem; line-height: 1.4; color: #e9edf0; }
+.hp-slide-caption strong { display: block; margin-bottom: 4px; color: #fff; font-family: 'Plus Jakarta Sans',sans-serif; font-size: 1rem; }
+.hp-slider-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
+.hp-slider-dots { display: flex; gap: 8px; }
+.hp-slider-dots button { width: 28px; height: 3px; background: #c5c9ca; transition: width .25s,background .25s; }
+.hp-slider-dots button.is-active { width: 52px; background: #74603d; }
+.hp-slider-arrows { display: flex; gap: 7px; }
+.hp-slider-arrows button { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid #dadddf; border-radius: 50%; background: #fff; color: #182e46; }
+.hp-slider-arrows button:hover { color: #fff; background: #182e46; border-color: #182e46; }
+.hp-slider-arrows .material-symbols-outlined { font-size: 19px; }
+.hp-strengths { max-width: 1376px; margin: 48px auto 0; padding: 0 32px 96px; display: grid; grid-template-columns: repeat(3,1fr); }
+.hp-strengths article { position: relative; min-height: 150px; display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; padding: 28px 38px; border-top: 1px solid #dadddf; border-bottom: 1px solid #dadddf; }
+.hp-strengths article+article { border-left: 1px solid #dadddf; }
+.hp-strengths .material-symbols-outlined { color: #74603d; font-size: 28px; }
+.hp-strength-number { position: absolute; right: 20px; top: 13px; color: #a7adb2; font-size: .65rem; }
+.hp-strengths h2 { font-size: 1rem; font-weight: 600; letter-spacing: -.02em; }
+.hp-strengths p { margin-top: 8px; color: #66727d; font-size: .78rem; line-height: 1.6; }
+.hp-about { padding: 112px max(32px,calc((100vw - 1312px)/2)); background: #f0eee8; }
+.hp-about__heading { max-width: 760px; }
+.hp-about__heading h2 { margin-top: 14px; font-size: clamp(2rem,3.5vw,3.8rem); font-weight: 600; }
+.hp-about__heading>p:last-child { max-width: 680px; margin-top: 24px; color: #586574; }
+.hp-about-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 62px; }
+.hp-about-grid article { position: relative; min-height: 290px; padding: 34px; border: 1px solid #d7d4cd; background: #f7f5f0; }
+.hp-about-grid article:hover { background: #fff; }
+.hp-about-grid .material-symbols-outlined { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #cfb782; border-radius: 50%; color: #74603d; }
+.hp-card-index { position: absolute; right: 28px; top: 30px; color: #92999f; font-size: .7rem; }
+.hp-about-grid h3 { margin-top: 56px; font-size: 1.25rem; }
+.hp-about-grid h3+p { margin-top: 14px; color: #66727d; font-size: .86rem; line-height: 1.7; }
+.hp-contact-section { padding: 96px 32px; }
+.hp-contact-card { max-width: 1312px; margin: 0 auto; display: grid; grid-template-columns: 1.25fr .75fr; gap: 72px; align-items: center; padding: 64px; border-radius: 4px 42px 4px 4px; background: #182e46; color: #fff; }
+.hp-contact-card .hp-kicker { color: #cfb782; }
+.hp-contact-card h2 { margin-top: 12px; max-width: 680px; font-size: clamp(2rem,3vw,3.2rem); font-weight: 600; }
+.hp-contact-card h2+p { margin-top: 18px; color: #bbc6cf; }
+.hp-contact-actions { display: grid; gap: 10px; }
+.hp-contact-actions a { display: flex; align-items: center; gap: 15px; padding: 15px 18px; border: 1px solid #ffffff24; border-radius: 8px; background: #ffffff08; font-size: .85rem; }
+.hp-contact-actions a:hover { background: #ffffff12; }
+.hp-contact-actions small { display: block; color: #aebbc6; font-size: .65rem; }
+.hp-contact-actions .material-symbols-outlined { color: #cfb782; }
+@media(max-width:1023px) { .hp-clinic-hero { grid-template-columns: 1fr; gap: 12px; } .hp-clinic-hero__content { max-width: 760px; } .hp-clinic-slides { aspect-ratio: 16/10; } .hp-strengths { grid-template-columns: 1fr; } .hp-strengths article+article { border-left: 0; border-top: 0; } .hp-about-grid { grid-template-columns: 1fr; } .hp-about-grid article { min-height: 240px; } .hp-contact-card { grid-template-columns: 1fr; gap: 38px; } }
+@media(max-width:639px) { .hp-clinic-hero { padding: 30px 20px 20px; } .hp-clinic-hero__content { padding-top: 20px; } .hp-clinic-hero__content>.hp-kicker { margin-top: 30px; } .hp-clinic-hero h1 { font-size: 2.55rem; } .hp-clinic-slides { aspect-ratio: 4/5; border-radius: 3px 34px 3px 3px; } .hp-clinic-slide:first-child img { object-position: 68% center; } .hp-slide-caption { left: 20px; right: 20px; } .hp-strengths { margin-top: 30px; padding: 0 20px 70px; } .hp-strengths article { padding-inline: 10px; } .hp-about { padding: 76px 20px; } .hp-about-grid { margin-top: 40px; } .hp-contact-section { padding: 60px 20px; } .hp-contact-card { padding: 36px 24px; border-radius: 3px 28px 3px 3px; } }
+
+/* Navigation and care journey */
+.hp-site-header { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #e1e1dd; background: rgba(250,249,246,.94); backdrop-filter: blur(16px); }
+.hp-site-nav { max-width: 1440px; min-height: 84px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+.hp-brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: #182e46; color: #cfb782; }
+.hp-brand-mark .material-symbols-outlined { font-size: 23px; }
+.hp-nav-links { display: flex; align-items: center; gap: 30px; color: #586574; font-size: .83rem; font-weight: 500; }
+.hp-nav-links>a:not(.hp-nav-cta):hover { color: #182e46; }
+.hp-nav-login { margin-left: 12px; padding-left: 28px; border-left: 1px solid #dadddf; color: #182e46; font-weight: 600; }
+.hp-nav-cta { display: inline-flex; align-items: center; gap: 13px; padding: 12px 17px; border-radius: 8px; background: #182e46; color: #fff; font-weight: 600; }
+.hp-nav-cta:hover { background: #284661; }
+.hp-menu-button { display: none; width: 44px; height: 44px; place-items: center; border: 1px solid #dadddf; border-radius: 9px; background: #fff; color: #182e46; }
+.hp-care-path { padding: 112px max(32px,calc((100vw - 1312px)/2)); background: #182e46; color: #fff; scroll-margin-top: 84px; }
+.hp-care-path__heading { display: grid; grid-template-columns: 1.15fr .85fr; gap: 80px; align-items: end; }
+.hp-care-path__heading .hp-kicker { color: #cfb782; }
+.hp-care-path__heading h2 { max-width: 700px; margin-top: 14px; font-size: clamp(2rem,3.5vw,3.8rem); font-weight: 600; }
+.hp-care-path__heading>p { max-width: 520px; color: #bdc8d1; line-height: 1.8; }
+.hp-care-steps { margin-top: 70px; padding: 0; display: grid; grid-template-columns: repeat(4,1fr); list-style: none; border-top: 1px solid #ffffff24; }
+.hp-care-steps li { position: relative; min-height: 260px; padding: 34px 28px 24px 0; }
+.hp-care-steps li+li { padding-left: 28px; border-left: 1px solid #ffffff24; }
+.hp-care-icon { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid #cfb78270; border-radius: 50%; color: #cfb782; }
+.hp-care-number { position: absolute; right: 22px; top: 38px; color: #81909d; font-size: .68rem; }
+.hp-care-steps h3 { margin-top: 54px; font-size: 1.15rem; }
+.hp-care-steps p { max-width: 240px; margin-top: 12px; color: #aebbc6; font-size: .82rem; line-height: 1.7; }
+.hp-footer { padding: 72px max(32px,calc((100vw - 1312px)/2)) 28px; background: #101f30; color: #fff; }
+.hp-footer__main { display: grid; grid-template-columns: 2fr 1fr 1.15fr; gap: 80px; }
+.hp-footer__brand { color: #fff; }
+.hp-footer__main>div:first-child>p { max-width: 430px; margin-top: 24px; color: #91a0ad; font-size: .82rem; line-height: 1.75; }
+.hp-footer__main>div:not(:first-child) { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; color: #9dabb7; font-size: .78rem; }
+.hp-footer__main a:hover { color: #fff; }
+.hp-footer__title { margin-bottom: 7px; color: #cfb782; font-size: .68rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.hp-footer__bottom { margin-top: 58px; padding-top: 24px; border-top: 1px solid #ffffff18; display: flex; justify-content: space-between; gap: 20px; color: #7f8f9d; font-size: .68rem; }
+.hp-footer__bottom span:last-child { display: flex; align-items: center; gap: 6px; }
+.hp-footer__bottom .material-symbols-outlined { color: #cfb782; font-size: 15px; }
+@media(max-width:899px) {
+  .hp-site-nav { min-height: 72px; padding: 0 20px; }
+  .hp-menu-button { display: grid; }
+  .hp-nav-links { position: absolute; left: 16px; right: 16px; top: calc(100% + 8px); display: none; align-items: stretch; gap: 0; padding: 14px; border: 1px solid #dadddf; border-radius: 14px; background: #fff; box-shadow: 0 18px 50px rgba(24,46,70,.13); }
+  .menu-open .hp-nav-links { display: flex; flex-direction: column; }
+  .hp-nav-links a { padding: 13px 12px; }
+  .hp-nav-login { margin: 5px 0 0; padding-left: 12px; border-top: 1px solid #e6e6e2; border-left: 0; }
+  .hp-nav-cta { margin-top: 5px; justify-content: space-between; }
+  .hp-care-path__heading { grid-template-columns: 1fr; gap: 28px; }
+  .hp-care-steps { grid-template-columns: 1fr 1fr; }
+  .hp-care-steps li:nth-child(3) { border-left: 0; border-top: 1px solid #ffffff24; }
+  .hp-care-steps li:nth-child(4) { border-top: 1px solid #ffffff24; }
+  .hp-footer__main { grid-template-columns: 1fr 1fr; }
+  .hp-footer__main>div:first-child { grid-column: 1/-1; }
+}
+@media(max-width:639px) {
+  .hp-brand { font-size: 21px; }
+  .hp-brand-mark { width: 35px; height: 35px; }
+  .hp-care-path { padding: 76px 20px; }
+  .hp-care-steps { grid-template-columns: 1fr; margin-top: 46px; }
+  .hp-care-steps li,.hp-care-steps li+li { min-height: 0; padding: 28px 0; border-top: 1px solid #ffffff24; border-left: 0; }
+  .hp-care-steps h3 { margin-top: 30px; }
+  .hp-care-steps p { max-width: none; }
+  .hp-footer { padding: 58px 20px 24px; }
+  .hp-footer__main { grid-template-columns: 1fr; gap: 40px; }
+  .hp-footer__main>div:first-child { grid-column: auto; }
+  .hp-footer__bottom { flex-direction: column; margin-top: 42px; }
+}
+
+/* KOLINK-format total redesign — HealthPass medical edition */
+.hk-container{width:min(1180px,calc(100% - 48px));margin:auto}.hk-header{position:relative;background:#fff}.hk-topbar{height:46px;background:#062e31;color:#fff;overflow:hidden}.hk-header-wide{width:min(1810px,calc(100% - 64px));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between}.hk-topbar-left{position:relative;height:100%;display:flex;align-items:center;padding-right:80px;z-index:0}.hk-topbar-left:before{content:"";position:absolute;z-index:-1;inset:0 0 0 auto;width:100vw;background:linear-gradient(105deg,#087f8c,#11a8a1);clip-path:polygon(0 0,96% 0,100% 50%,96% 100%,0 100%)}.hk-topbar-left>*{height:100%;display:flex;align-items:center;gap:8px;padding:0 21px;border-right:1px solid #ffffff45;font-size:11px;white-space:nowrap}.hk-topbar-left>*:first-child{padding-left:0}.hk-topbar-left>*:last-child{border:0}.hk-topbar .material-symbols-outlined{font-size:16px;color:#baf4df}.hk-topbar-right{font-size:11px}.hk-topbar-right span{display:flex;align-items:center;gap:8px}.hk-main-nav{max-width:1810px;min-height:92px;padding:0 32px}.hk-main-nav .hp-brand{min-width:210px}.hk-main-nav .hp-brand-mark{border-radius:50% 50% 50% 10px;background:#073c43;color:#7ce0c3}.hk-main-nav .hp-nav-links{gap:12px;font-size:13px;font-weight:650}.hk-main-nav .hp-nav-links>a:not(.hp-nav-login):not(.hp-nav-cta){padding:11px 12px;border-bottom:2px solid transparent}.hk-main-nav .hp-nav-links>a:hover{color:#087f8c;border-color:#10aaa1}.hk-main-nav .hp-nav-login{border:0;margin-left:28px;padding:12px 15px}.hk-main-nav .hp-nav-cta{min-height:48px;padding:8px 10px 8px 20px;border-radius:999px;background:#073c43}.hk-main-nav .hp-nav-cta .material-symbols-outlined{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#73ddbd;color:#073c43;font-size:18px}.hp-kolink-home{--hk-dark:#062e31;--hk-deep:#073c43;--hk-teal:#0d9d98;--hk-mint:#79e0c0;--hk-pale:#edf8f5;overflow:hidden;background:#fff;color:#102d31}.hk-hero{height:740px;position:relative;isolation:isolate;background:var(--hk-dark);color:#fff}.hk-hero-photo{position:absolute;z-index:-3;inset:0 0 0 45%;overflow:hidden}.hk-hero-slide{position:absolute;inset:0;opacity:0;transition:opacity .65s ease}.hk-hero-slide.is-active{opacity:1}.hk-hero-slide img{width:100%;height:100%;object-fit:cover}.hk-hero-slide:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#062e31aa,transparent 58%,#062e3133)}.hk-hero-dark{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,#062e31 0 45%,#062e31ed 52%,#062e3120 78%,#062e3155)}.hk-contours{position:absolute;z-index:-1;inset:0 48% 0 0;opacity:.24;background-image:repeating-radial-gradient(ellipse at 25% 45%,transparent 0 38px,#65bdb528 39px 40px)}.hk-wedge{position:absolute;z-index:-1;left:44.5%;top:0;width:14%;height:100%;background:linear-gradient(112deg,transparent 0 43%,#83e6c8 44% 50%,#078c90 51% 57%,transparent 58%);filter:drop-shadow(8px 0 12px #0003)}.hk-hero-inner{width:min(1180px,calc(100% - 48px));height:100%;margin:auto}.hk-hero-copy{width:54%;padding-top:105px}.hk-eyebrow,.hk-kicker{display:flex;align-items:center;gap:7px;color:#79e0c0;font-size:11px;font-weight:850;letter-spacing:.12em}.hk-eyebrow .material-symbols-outlined{font-size:16px}.hk-hero h1{margin:25px 0;font-size:clamp(48px,4vw,62px);font-weight:900;line-height:1.1;letter-spacing:-2.8px;text-transform:uppercase}.hk-hero h1 em{color:#79e0c0;font-style:normal}.hk-hero-copy>p:not(.hk-eyebrow){max-width:570px;color:#b9d1d0;font-size:17px;line-height:1.75}.hk-actions{display:flex;align-items:center;gap:14px;margin:30px 0 34px}.hk-btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:14px 20px;border-radius:10px;font-size:13px;font-weight:750;transition:.2s}.hk-btn:hover{transform:translateY(-2px)}.hk-btn .material-symbols-outlined{font-size:18px}.hk-btn-accent{background:#79e0c0;color:#073c43}.hk-btn-dark{background:#073c43;color:#fff}.hk-play{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700}.hk-play>span{width:43px;height:43px;display:grid;place-items:center;border-radius:50%;background:#ffffff18}.hk-trust{display:flex;align-items:center}.hk-avatar{width:34px;height:34px;margin-left:-7px;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:#0b696d;font-size:10px;font-weight:800}.hk-avatar:first-child{margin-left:0;background:#be8258}.hk-trust>div{display:grid;margin-left:13px}.hk-trust strong{display:flex;align-items:center;gap:5px;color:#79e0c0;font-size:11px}.hk-trust strong span{font-size:15px}.hk-trust small{margin-top:3px;color:#b9d1d0;font-size:10px}.hk-slider-controls{position:absolute;right:34px;top:50%;display:flex;flex-direction:column;align-items:center;gap:12px;transform:translateY(-50%)}.hk-slider-controls>button{width:38px;height:38px;display:grid;place-items:center;border:1px solid #ffffff80;border-radius:50%;background:#062e3160;backdrop-filter:blur(5px)}.hk-slider-controls>div{display:grid;gap:7px}.hk-slider-controls>div button{width:8px;height:8px;border:2px solid transparent;border-radius:50%;background:#c3d1d1}.hk-slider-controls>div button.is-active{outline:1px solid #79e0c0;outline-offset:3px;background:#79e0c0}.hk-slide-count{position:absolute;right:6%;bottom:84px}.hk-slide-count strong{font-size:24px}.hk-slide-count span{font-size:10px;color:#c7d5d4}.hk-record-box{position:absolute;z-index:6;left:50%;bottom:-38px;width:min(860px,calc(100% - 48px));padding:15px;display:flex;align-items:center;gap:22px;transform:translateX(-50%);border:1px solid #e1ece9;border-radius:18px;background:#fff;color:#183432;box-shadow:0 18px 50px #17382d28}.hk-record-title{min-width:235px;display:flex;align-items:center;gap:12px}.hk-record-title>span{width:48px;height:48px;display:grid;place-items:center;border-radius:12px;background:#e3f7f1;color:#078d87}.hk-record-title>div{display:grid}.hk-record-title strong{font-size:13px}.hk-record-title small{font-size:9px;color:#81918d}.hk-record-box>a.hk-record-cta{height:52px;flex:1;display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:11px;background:#073c43;color:#fff;font-size:13px;font-weight:750;transition:.2s;cursor:pointer}.hk-record-box>a.hk-record-cta:hover{background:#0eaaa0;transform:translateY(-2px)}.hk-record-box>a.hk-record-cta .material-symbols-outlined:first-child{font-size:18px;color:#79e0c0}.hk-record-box>a.hk-record-cta>b{width:32px;height:32px;margin-left:4px;display:grid;place-items:center;border-radius:50%;background:#ffffff20;font-size:16px}.hk-network{padding:90px 0 44px}.hk-network .hk-container{display:flex;align-items:center;gap:48px}.hk-network .hk-container>span{color:#8b9a97;font-size:10px;text-transform:uppercase;white-space:nowrap}.hk-network .hk-container>div{width:100%;display:flex;justify-content:space-between;gap:30px;color:#849b98;font-size:13px}.hk-section{padding:105px 0}.hk-about{background:#f0f8f6}.hk-about-grid,.hk-journey-grid{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}.hk-about-visual{height:500px;position:relative;display:grid;place-items:center}.hk-orbit{position:absolute;width:430px;height:430px;border-radius:50%;background:#ccefe4}.hk-about-visual:before,.hk-about-visual:after{content:"";position:absolute;width:470px;height:180px;border:1px solid #7fc8b6;border-radius:50%;transform:rotate(-12deg)}.hk-about-visual:after{width:390px;transform:rotate(18deg)}.hk-about-visual img{position:relative;width:470px;height:390px;object-fit:cover;border-radius:48% 48% 18px 18px;clip-path:ellipse(48% 48% at 50% 50%);filter:drop-shadow(0 20px 25px #073c4330)}.hk-about-visual>span{position:absolute;z-index:2;right:20px;top:90px;padding:15px 18px;display:grid;border-radius:13px;background:#fff;box-shadow:0 15px 40px #073c4320}.hk-about-visual strong{color:#078d87;font-size:18px}.hk-about-visual small{color:#84938f;font-size:9px}.hk-about-copy h2,.hk-journey-copy h2,.hk-section-head h2,.hk-proof h2{margin:13px 0 22px;font-size:46px;font-weight:500;line-height:1.08;letter-spacing:-2.6px}.hk-about-copy>p:not(.hk-kicker),.hk-journey-copy>p:not(.hk-kicker),.hk-section-head>p,.hk-proof>div>div:first-child>p:not(.hk-kicker){color:#647975;line-height:1.75}.hk-points{display:grid;gap:18px;margin:27px 0}.hk-points>div{display:flex;gap:17px}.hk-points b{color:#0a9a91;font-size:11px}.hk-points span{display:grid}.hk-points strong{font-size:12px}.hk-points small{margin-top:5px;color:#859692;font-size:10px}.hk-journey{background:#fff}.hk-device{width:360px;height:610px;margin:auto;padding:25px 22px;border:9px solid #073c43;border-radius:42px;background:#f4f9f7;box-shadow:0 30px 70px #073c4328;transform:rotate(-3deg)}.hk-device-bar{display:flex;align-items:center;gap:8px;padding-bottom:18px;border-bottom:1px solid #dae8e4;color:#073c43}.hk-device-bar>span{color:#0b9b94}.hk-device-bar i{width:8px;height:8px;margin-left:auto;border-radius:50%;background:#79e0c0}.hk-device-profile{display:flex;align-items:center;gap:13px;padding:25px 0}.hk-device-profile>span{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#073c43;color:#79e0c0;font-weight:800}.hk-device-profile>div{display:grid}.hk-device-profile small,.hk-device-card small{color:#76908a;font-size:8px;letter-spacing:.1em}.hk-device-card{padding:21px;border-radius:18px;background:#073c43;color:#fff}.hk-device-card>strong{display:block;margin:14px 0;font-size:17px}.hk-device-card p{display:flex;align-items:center;gap:7px;color:#b9d4ce;font-size:11px}.hk-device-card p span{font-size:16px;color:#79e0c0}.hk-device-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.hk-device-actions>span{height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1px solid #dce8e5;border-radius:14px;background:#fff;color:#56706a;font-size:9px}.hk-device-actions i{font-size:22px;color:#099990;font-style:normal}.hk-journey-copy ul{margin:28px 0;padding:0;display:grid;gap:15px;list-style:none}.hk-journey-copy li{display:flex;align-items:center;gap:12px}.hk-journey-copy li span{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#dcf5ec;color:#068a81;font-size:11px}.hk-journey-copy li strong{font-size:13px}.hk-solutions{background:#f6faf9}.hk-section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:46px}.hk-section-head>p{max-width:430px}.hk-solution-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.hk-solution-grid article{padding:29px;border:1px solid #dce9e5;border-radius:16px;background:#fff;transition:.25s}.hk-solution-grid article:hover{transform:translateY(-7px);box-shadow:0 20px 50px #073c4313}.hk-solution-grid article>div{display:flex;justify-content:space-between;color:#96aaa5}.hk-solution-grid article>div>span{width:52px;height:52px;display:grid;place-items:center;border-radius:14px;background:#e0f5ee;color:#078f88}.hk-solution-grid h3{margin:26px 0 11px;font-size:20px}.hk-solution-grid p{min-height:72px;color:#697e79;font-size:13px;line-height:1.7}.hk-solution-grid a{display:flex;align-items:center;gap:8px;margin-top:24px;color:#078d87;font-size:12px;font-weight:750}.hk-solution-grid a span{font-size:17px}.hk-proof{padding:105px 0;background:#073c43;color:#fff}.hk-proof>.hk-container{display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;align-items:center}.hk-proof .hk-kicker{color:#79e0c0}.hk-proof>div>div:first-child>p:not(.hk-kicker){color:#a5c0bb}.hk-proof-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #ffffff20;border-radius:19px;overflow:hidden}.hk-proof-grid article{min-height:260px;padding:24px;display:flex;flex-direction:column;border-right:1px solid #ffffff20}.hk-proof-grid article:last-child{border:0}.hk-proof-grid article>span{align-self:flex-end;color:#6d9690;font-size:9px}.hk-proof-grid article>strong{width:48px;height:48px;margin-top:8px;display:grid;place-items:center;border-radius:13px;background:#ffffff12;color:#79e0c0;font-size:24px}.hk-proof-grid article>b{margin-top:auto;font-size:15px}.hk-proof-grid article>small{margin-top:7px;color:#91aca7;font-size:10px;line-height:1.5}.hk-final{padding:85px 0;background:#fff}.hk-final>.hk-container{position:relative;min-height:270px;padding:55px 60px;display:flex;align-items:center;justify-content:space-between;gap:40px;overflow:hidden;border-radius:24px;background:#0b8f8b;color:#fff}.hk-final .hk-kicker{color:#baf4df}.hk-final h2{max-width:700px;margin:12px 0;font-size:39px;line-height:1.12;letter-spacing:-2px}.hk-final p:not(.hk-kicker){color:#d3efeb}.hk-final .hk-btn{position:relative;z-index:2;flex:none}.hk-final>div>i{position:absolute;width:280px;height:280px;right:-90px;border:1px solid #ffffff24;border-radius:50%}.hk-final>div>i:last-child{width:190px;height:190px;right:-45px}.hk-footer{background:#052a2e}.hk-footer .hp-brand-mark{background:#79e0c0;color:#073c43}
+@media(max-width:1050px){.hk-topbar-left>span{display:none}.hk-main-nav .hp-nav-links{gap:3px}.hk-main-nav .hp-nav-login{margin-left:0}.hk-about-grid,.hk-journey-grid{gap:55px}}
+@media(max-width:899px){.hk-topbar{height:38px}.hk-topbar-left a:nth-child(2){display:none}.hk-header-wide{width:calc(100% - 32px)}.hk-main-nav{min-height:74px}.hk-main-nav .hp-nav-links{top:calc(100% + 8px)}.hk-main-nav .hp-nav-login{margin:5px 0 0}.hk-hero{height:auto;min-height:980px;padding-bottom:100px}.hk-hero-photo{inset:490px 20px 80px;border-radius:20px}.hk-hero-dark{background:linear-gradient(#062e31 0 47%,#062e31aa 62%,#062e3130)}.hk-wedge{display:none}.hk-hero-copy{width:100%;padding-top:70px}.hk-hero h1{font-size:51px}.hk-slider-controls{right:35px;top:auto;bottom:185px}.hk-slide-count{bottom:115px}.hk-record-box{bottom:-40px}.hk-network{padding-top:105px}.hk-about-grid,.hk-journey-grid{grid-template-columns:1fr}.hk-about-copy,.hk-journey-copy{max-width:650px}.hk-section-head{display:block}.hk-section-head>p{margin-top:20px}.hk-proof>.hk-container{grid-template-columns:1fr}.hk-final>.hk-container{align-items:flex-start;flex-direction:column}.hk-solution-grid{grid-template-columns:1fr 1fr}.hk-solution-grid article:last-child{grid-column:1/-1}.hk-footer{background:#052a2e}}
+@media(max-width:639px){.hk-container{width:calc(100% - 32px)}.hk-topbar-left{padding-right:25px}.hk-topbar-left>*{padding:0;font-size:9px}.hk-topbar-right{font-size:9px}.hk-main-nav{padding:0 14px}.hk-main-nav .hp-brand{min-width:0}.hk-hero{min-height:900px}.hk-hero-inner{width:calc(100% - 32px)}.hk-hero-copy{padding-top:45px}.hk-hero h1{font-size:40px;letter-spacing:-2px}.hk-hero-copy>p:not(.hk-eyebrow){font-size:15px}.hk-actions{align-items:flex-start;flex-direction:column}.hk-hero-photo{inset:510px 0 70px;border-radius:0}.hk-contours{right:0}.hk-slider-controls{right:17px;bottom:150px}.hk-slide-count{right:18%;bottom:100px}.hk-record-box{width:calc(100% - 28px);display:block;padding:12px}.hk-record-title{margin-bottom:10px}.hk-record-box>a{height:48px}.hk-network .hk-container{display:block}.hk-network .hk-container>span{display:block;margin-bottom:24px}.hk-network .hk-container>div{flex-wrap:wrap;justify-content:flex-start}.hk-section{padding:75px 0}.hk-about-grid,.hk-journey-grid{gap:45px}.hk-about-visual{height:360px}.hk-orbit{width:310px;height:310px}.hk-about-visual:before{width:330px}.hk-about-visual:after{width:290px}.hk-about-visual img{width:330px;height:290px}.hk-about-visual>span{right:0;top:40px}.hk-about-copy h2,.hk-journey-copy h2,.hk-section-head h2,.hk-proof h2{font-size:35px;letter-spacing:-2px}.hk-device{width:min(330px,100%);height:565px}.hk-solution-grid{grid-template-columns:1fr}.hk-solution-grid article:last-child{grid-column:auto}.hk-proof-grid{grid-template-columns:1fr}.hk-proof-grid article{min-height:190px;border-right:0;border-bottom:1px solid #ffffff20}.hk-final>.hk-container{padding:38px 25px}.hk-final h2{font-size:31px}.hk-network{padding-bottom:25px}}
+
+/* Clinical blue palette: same KOLINK composition, unmistakably medical identity. */
+.hp-kolink-home{--hk-dark:#071f3d;--hk-deep:#0b3b66;--hk-teal:#0878b9;--hk-mint:#78cef2;--hk-pale:#eef7fc;color:#102a43}
+.hk-topbar{background:#071f3d}.hk-topbar-left:before{background:linear-gradient(105deg,#0878b9,#1598d1)}.hk-topbar .material-symbols-outlined{color:#c7ebfb}.hk-main-nav .hp-brand-mark{background:#0b3b66;color:#8bd8f6}.hk-main-nav .hp-nav-links>a:hover{color:#0878b9;border-color:#1598d1}.hk-main-nav .hp-nav-cta{background:#0b3b66}.hk-main-nav .hp-nav-cta .material-symbols-outlined{background:#78cef2;color:#071f3d}.hk-hero{background:#071f3d}.hk-hero-slide:after{background:linear-gradient(90deg,#071f3daa,transparent 58%,#071f3d33)}.hk-hero-dark{background:linear-gradient(90deg,#071f3d 0 45%,#071f3ded 52%,#071f3d20 78%,#071f3d55)}.hk-contours{background-image:repeating-radial-gradient(ellipse at 25% 45%,transparent 0 38px,#73bfe628 39px 40px)}.hk-wedge{background:linear-gradient(112deg,transparent 0 43%,#78cef2 44% 50%,#0878b9 51% 57%,transparent 58%)}.hk-eyebrow,.hk-kicker,.hk-hero h1 em,.hk-trust strong{color:#78cef2}.hk-btn-accent{background:#78cef2;color:#071f3d}.hk-btn-dark{background:#0b3b66}.hk-avatar{background:#135b86}.hk-record-title>span{background:#e2f4fc;color:#0878b9}.hk-record-box>a>b{background:#1598d1}.hk-about{background:#eef7fc}.hk-orbit{background:#d8eef9}.hk-about-visual:before,.hk-about-visual:after{border-color:#8ccae8}.hk-about-visual strong,.hk-points b,.hk-solution-grid a{color:#0878b9}.hk-device{border-color:#0b3b66;background:#f3f8fb;box-shadow:0 30px 70px #071f3d28}.hk-device-bar,.hk-device-profile>span{color:#0b3b66}.hk-device-bar>span,.hk-device-actions i{color:#0878b9}.hk-device-bar i{background:#78cef2}.hk-device-profile>span,.hk-device-card{background:#0b3b66;color:#fff}.hk-device-profile>span{color:#a7e1f8}.hk-device-card p span{color:#78cef2}.hk-device-actions>span{border-color:#d9e8f0}.hk-journey-copy li span{background:#e0f3fb;color:#0878b9}.hk-solutions{background:#f5f9fc}.hk-solution-grid article{border-color:#d8e7f0}.hk-solution-grid article>div>span{background:#e0f3fb;color:#0878b9}.hk-proof{background:#0b3b66}.hk-proof .hk-kicker,.hk-proof-grid article>strong{color:#78cef2}.hk-final>.hk-container{background:#0878b9}.hk-final .hk-kicker{color:#c7ebfb}.hk-footer{background:#071f3d}.hk-footer .hp-brand-mark{background:#78cef2;color:#071f3d}
+@media(max-width:899px){.hk-hero-dark{background:linear-gradient(#071f3d 0 47%,#071f3daa 62%,#071f3d30)}}
+.hk-header .hp-brand-dot,.hk-footer .hp-brand-dot,.hk-footer .hp-footer__title,.hk-footer .hp-footer__bottom .material-symbols-outlined{color:#78cef2}
+.hk-clinician-visual{position:relative;min-height:620px;display:grid;place-items:end center;isolation:isolate}.hk-clinician-orbit{position:absolute;z-index:-1;left:50%;top:50%;width:480px;height:480px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 42% 35%,#eef9fe 0 32%,#d8eef9 33% 68%,transparent 69%);box-shadow:0 0 0 1px #c9e4f2}.hk-clinician-visual:before,.hk-clinician-visual:after{content:"";position:absolute;z-index:-1;left:50%;top:49%;width:540px;height:205px;border:1px solid #9ecfe6;border-radius:50%;transform:translate(-50%,-50%) rotate(-13deg)}.hk-clinician-visual:after{width:430px;transform:translate(-50%,-50%) rotate(18deg)}.hk-clinician-visual>img{width:min(555px,100%);height:600px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 24px 22px #0b3b6628)}.hk-clinician-chip{position:absolute;z-index:2;display:flex;align-items:center;gap:11px;padding:12px 15px;border:1px solid #d7e8f1;border-radius:13px;background:#fff;box-shadow:0 14px 35px #0b3b6624}.hk-clinician-chip>i{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#e3f4fc;color:#0878b9;font-size:19px;font-style:normal}.hk-clinician-chip>span{display:grid}.hk-clinician-chip small{color:#79909e;font-size:8px;letter-spacing:.1em}.hk-clinician-chip strong{margin-top:3px;color:#102a43;font-size:11px}.hk-clinician-chip--top{right:-5px;top:125px}.hk-clinician-chip--bottom{left:-5px;bottom:105px}
+@media(max-width:899px){.hk-clinician-visual{min-height:570px}.hk-clinician-visual>img{height:550px}.hk-clinician-chip--top{right:8%}.hk-clinician-chip--bottom{left:8%}}
+@media(max-width:639px){.hk-clinician-visual{min-height:430px}.hk-clinician-orbit{width:320px;height:320px}.hk-clinician-visual:before{width:350px}.hk-clinician-visual:after{width:290px}.hk-clinician-visual>img{height:420px}.hk-clinician-chip{padding:9px 10px}.hk-clinician-chip>i{width:32px;height:32px}.hk-clinician-chip--top{right:0;top:75px}.hk-clinician-chip--bottom{left:0;bottom:45px}}
+.hk-about-visual--team img{width:min(600px,110%);height:470px;object-fit:contain;object-position:center bottom;border-radius:0;clip-path:none;filter:drop-shadow(0 22px 20px #0b3b6625)}.hk-about-visual--team .hk-orbit{background:radial-gradient(circle at 42% 35%,#f5fbfe 0 30%,#d8eef9 31% 68%,transparent 69%)}.hk-about-visual--team>span{right:0;top:72px}.hk-about-visual--team>span strong{font-size:16px}
+@media(max-width:639px){.hk-about-visual--team img{width:360px;height:340px}.hk-about-visual--team>span{right:0;top:30px}}
+
+/* Refined clinical separator: subtle glass plane instead of a promotional stripe. */
+.hk-wedge{left:43.5%;width:13%;background:linear-gradient(180deg,#0b3b6640,#0878b926);clip-path:polygon(68% 0,100% 0,32% 100%,0 100%);filter:none;backdrop-filter:blur(2px)}.hk-wedge:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#ffffff12,transparent 42%,#071f3d22)}.hk-wedge:after{content:"";position:absolute;top:0;bottom:0;left:49%;width:3px;background:linear-gradient(180deg,#bdeaff,#55bde9 48%,#0878b9);transform:skewX(-10deg);box-shadow:0 0 18px #67c8ef55}
+@media(max-width:899px){.hk-wedge{display:none}}
+
+/* Premium KOLINK-format authentication */
+.hp-auth-photo{position:relative;isolation:isolate;overflow:hidden;background-color:#071f3d;background-size:cover;background-position:center}.hp-auth-photo:before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(180deg,#071f3dcc 0%,#071f3d38 38%,#071f3df2 100%)}.hp-auth-photo:after{content:"";position:absolute;z-index:-1;left:-140px;bottom:-190px;width:450px;height:450px;border:1px solid #78cef233;border-radius:50%;box-shadow:0 0 0 70px #78cef20a}.hp-auth-photo--login{background-image:url('/images/healthpass/login-doctor-secure.webp');background-position:center}.hp-auth-photo .hp-brand{position:relative;color:#fff}.hp-auth-photo .hp-brand-mark{background:#78cef2;color:#071f3d}.hp-auth-copy{margin-top:auto;padding-top:280px}.hp-auth-copy h2{max-width:560px;font-size:clamp(2rem,3vw,3.25rem);line-height:1.08;letter-spacing:-.04em}.hp-auth-copy .hp-eyebrow{color:#78cef2}.hp-auth-proof{width:max-content;max-width:100%;margin-top:30px;padding:13px 16px;display:flex;align-items:center;gap:11px;border:1px solid #ffffff28;border-radius:12px;background:#ffffff12;backdrop-filter:blur(12px)}.hp-auth-proof>span:first-child{color:#78cef2}.hp-auth-proof>span:last-child{display:grid}.hp-auth-proof strong{font-size:.75rem}.hp-auth-proof small{margin-top:3px;color:#b8cbd9;font-size:.62rem}.hp-login>div>div:last-child{background:#f5f9fc}.hp-login .shadow-level-1{padding-top:24px}.hp-login button[type=submit]{min-height:52px;background:#0b4b7d}.hp-login button[type=submit]:hover{background:#0878b9}.hp-register{background:#eef5f9}.hp-register>div{max-width:1600px}.hp-register-visual{background-image:url('/images/healthpass/register-medical-team.webp');background-size:cover;background-position:center}.hp-register-visual .hp-register-shade{background:linear-gradient(180deg,#071f3de8 0%,#071f3d70 38%,#071f3df7 100%)}.hp-register-visual:after{content:"";position:absolute;right:-130px;top:-160px;width:380px;height:380px;border:1px solid #78cef238;border-radius:50%}.hp-register-visual .actor-choice{background:#071f3da8;border-color:#ffffff2b;backdrop-filter:blur(12px)}.hp-register-visual .actor-choice[aria-pressed=true]{border-color:#78cef2;background:#0b4b7dcc;box-shadow:0 10px 30px #02132655}.hp-register-visual .actor-choice>span:first-child{background:#eaf7fc;color:#0b4b7d}.hp-register-visual .actor-choice[aria-pressed=false]>span:first-child{background:#ffffff18;color:#9dddf6}.hp-register>div>div:last-child{border:1px solid #dce8ef;background:#fff;box-shadow:0 18px 60px #0b3b660e}.hp-auth-register-standalone{position:relative;background-image:linear-gradient(90deg,#071f3de8,#071f3d99),url('/images/healthpass/register-medical-team.webp');background-size:cover;background-position:center;background-attachment:fixed}.hp-auth-register-standalone main{border:1px solid #ffffff60;background:#fffffff5;box-shadow:0 25px 80px #071f3d42;backdrop-filter:blur(18px)}
+@media(max-width:1023px){.hp-register-visual{display:none}.hp-register>div{display:block;padding:16px}.hp-register>div>div:last-child{border-radius:20px}}
+@media(max-width:767px){.hp-auth-copy{padding-top:0}.hp-auth-register-standalone{padding:16px;background-position:62% center}.hp-auth-register-standalone main{padding:24px 18px;border-radius:20px}}
+
+/* ==========================================================================
+   Espaces de travail (dashboards) — système unique
+   --------------------------------------------------------------------------
+   Remplace quatre couches de surcharges empilées (« unified premium »,
+   « sober premium », « admin 2026 », « gest-stock parity ») qui redéfinissaient
+   les mêmes éléments et se départageaient par accident de spécificité.
+
+   Règles de tenue de cette section :
+   - un seul jeu de tokens, une seule définition par élément ;
+   - on habille, on ne remet pas en page : le positionnement reste géré par
+     les classes Tailwind de chaque vue ;
+   - le CSS hors @layer l'emporte déjà sur les utilitaires Tailwind :
+     `!important` reste l'exception, pas la règle.
+   ========================================================================== */
+/* Palette reprise telle quelle du site public (section .hk-* plus haut) :
+   navy #071f3d, bleu primaire #0878b9, cyan d'accent #78cef2, fonds pâles.
+   Les espaces de travail et les pages publiques partagent ainsi la même identité. */
+.hp-workspace {
+  --ws-nav: #071f3d;
+  --ws-nav-ink: #a7c8e0;
+  --ws-nav-hover: rgba(255, 255, 255, .08);
+  --ws-accent: #0878b9;
+  --ws-accent-ink: #ffffff;
+  --ws-accent-soft: #e2f4fc;
+  --ws-accent-bright: #78cef2;
+  --ws-canvas: #f5f9fc;
+  --ws-card: #ffffff;
+  --ws-line: #d8e7f0;
+  --ws-ink: #071f3d;
+  --ws-muted: #5c748c;
+  --ws-radius: 14px;
+  --ws-shadow: 0 1px 2px rgba(7, 31, 61, .06), 0 8px 24px rgba(7, 31, 61, .05);
+
+  background: var(--ws-canvas);
+  color: var(--ws-ink);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.hp-workspace :is(h1, h2, h3, h4) {
+  color: var(--ws-ink);
+  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -.02em;
+}
+
+.hp-workspace :is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid var(--ws-accent);
+  outline-offset: 2px;
+}
+
+/* --- Navigation latérale ------------------------------------------------- */
+/* Couvre les trois structures existantes : <aside> (médecin, admin),
+   nav.hp-super-sidebar (super admin) et le <nav> simple (service). */
+.hp-workspace > aside,
+.hp-workspace > nav {
+  padding: 18px 14px;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, .07);
+  background: var(--ws-nav);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Bloc de marque / profil en tête de barre latérale. */
+.hp-workspace > :is(aside, nav) > div:first-child {
+  margin-bottom: 18px;
+  padding: 4px 10px 16px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .09);
+  background: transparent;
+  box-shadow: none;
+}
+
+.hp-workspace > :is(aside, nav) > div:first-child :is(h1, h2, p, strong, .text-primary) {
+  color: #fff;
+}
+
+.hp-workspace > :is(aside, nav) > div:first-child :is(small, .text-mention, .text-xs) {
+  color: var(--ws-nav-ink);
+}
+
+/* Pastilles d'avatar / initiales. */
+.hp-workspace > :is(aside, nav) :is(.rounded-full, .hp-admin-brand__mark, .hp-admin-context__avatar) {
+  background: var(--ws-accent);
+  color: #fff;
+}
+
+/* Liens de navigation : un seul état par situation. */
+.hp-workspace > :is(aside, nav) :is(nav a, ul a, > a) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  margin: 2px 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--ws-nav-ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background .18s ease, color .18s ease;
+}
+
+.hp-workspace > :is(aside, nav) :is(nav a, ul a, > a):hover {
+  background: var(--ws-nav-hover);
+  color: #fff;
+}
+
+/* État actif : porté soit par aria-current, soit par les classes des vues. */
+.hp-workspace > :is(aside, nav) :is(nav a, ul a, > a):is([aria-current='page'], .bg-secondary-container, .bg-primary-container) {
+  position: relative;
+  background: var(--ws-accent);
+  color: var(--ws-accent-ink);
+  font-weight: 600;
+}
+
+.hp-workspace > :is(aside, nav) :is(nav a, ul a, > a):is([aria-current='page'], .bg-secondary-container, .bg-primary-container) .material-symbols-outlined {
+  color: #fff;
+}
+
+/* Pied de barre latérale (déconnexion). */
+.hp-workspace > :is(aside, nav) form {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, .09);
+}
+
+.hp-workspace > :is(aside, nav) form button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--ws-nav-ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  transition: background .18s ease, color .18s ease;
+}
+
+.hp-workspace > :is(aside, nav) form button:hover {
+  background: var(--ws-nav-hover);
+  color: #fff;
+}
+
+/* --- Zone principale ----------------------------------------------------- */
+.hp-workspace > main {
+  background: var(--ws-canvas);
+}
+
+.hp-workspace main :is(> header, header.sticky, .hp-admin-topbar) {
+  border-color: var(--ws-line);
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 1px 2px rgba(7, 31, 61, .05);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.hp-admin-topbar__eyebrow,
+.hp-admin-kicker {
+  color: var(--ws-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.hp-admin-topbar__icon {
+  color: var(--ws-accent);
+}
+
+.hp-admin-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ws-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.hp-admin-status i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success, #059669);
+}
+
+.hp-admin-nav-label {
+  padding: 14px 12px 6px;
+  color: rgba(255, 255, 255, .45);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* Blocs marque et profil de la barre latérale admin : le libellé est empilé
+   sous le titre, sans quoi « HealthPass » et « Administration » se collent. */
+.hp-admin-brand,
+.hp-admin-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hp-admin-context {
+  margin-bottom: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.hp-admin-brand > span:last-child,
+.hp-admin-context > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.hp-admin-brand strong,
+.hp-admin-context strong {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.hp-admin-brand small,
+.hp-admin-context small {
+  overflow: hidden;
+  color: var(--ws-nav-ink);
+  font-size: 11px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hp-admin-brand__mark,
+.hp-admin-context__avatar,
+.hp-admin-profile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--ws-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hp-admin-profile {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+/* Bandeau de titre de page. */
+.hp-admin-pagehead,
+.hp-workspace-superadmin main > div > header {
+  position: relative;
+  padding: 26px 28px;
+  overflow: hidden;
+  border-radius: var(--ws-radius);
+  background: linear-gradient(115deg, var(--ws-nav), #0b4b7d);
+  color: #fff;
+}
+
+.hp-admin-pagehead :is(h1, h2, p),
+.hp-workspace-superadmin main > div > header :is(h1, h2, p) {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+}
+
+.hp-admin-pagehead > p:first-child,
+.hp-workspace-superadmin main > div > header > p:first-child {
+  color: var(--ws-accent-bright);
+}
+
+/* --- Cartes -------------------------------------------------------------- */
+.hp-workspace main :is(.card, .dashboard-card, .card-level-1, section.bg-white, div.bg-white, .bg-surface-container-lowest) {
+  border: 1px solid var(--ws-line);
+  border-radius: var(--ws-radius);
+  background: var(--ws-card);
+  box-shadow: var(--ws-shadow);
+}
+
+.hp-workspace main :is(.card, .dashboard-card, .card-level-2):hover {
+  box-shadow: 0 2px 4px rgba(7, 31, 61, .07), 0 14px 34px rgba(7, 31, 61, .08);
+}
+
+/* Pastilles d'icônes des cartes de statistiques : teintes douces et lisibles,
+   en remplacement des dégradés arc-en-ciel de l'ancienne couche. */
+.hp-workspace main :is(.card, .dashboard-card) :is(.bg-sky-50, .bg-amber-50, .bg-emerald-50, .bg-violet-50) {
+  background: var(--ws-accent-soft);
+  color: var(--ws-accent);
+}
+
+/* --- Tableaux ------------------------------------------------------------ */
+.hp-workspace main table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--ws-card);
+}
+
+.hp-workspace main thead {
+  background: #eef7fc;
+}
+
+.hp-workspace main th {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--ws-line);
+  color: var(--ws-ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.hp-workspace main td {
+  padding: 14px 20px;
+  border-color: #eaf2f8;
+  color: #33506b;
+  font-size: 14px;
+}
+
+.hp-workspace main tbody tr:hover {
+  background: #f5f9fc;
+}
+
+.hp-workspace main .overflow-x-auto:has(> table) {
+  border: 1px solid var(--ws-line);
+  border-radius: 12px;
+  background: var(--ws-card);
+  box-shadow: none;
+}
+
+/* --- Formulaires --------------------------------------------------------- */
+.hp-workspace main :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+  min-height: 42px;
+  border: 1px solid var(--ws-line);
+  border-radius: 10px;
+  background: #f8fbfd;
+  color: var(--ws-ink);
+  box-shadow: none;
+}
+
+.hp-workspace main :is(input, select, textarea):focus {
+  border-color: var(--ws-accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--ws-accent-soft);
+}
+
+/* --- Accents ------------------------------------------------------------- */
+.hp-workspace main :is(.text-primary, .text-secondary) {
+  color: var(--ws-accent);
+}
+
+.hp-workspace main :is(.bg-primary, .bg-primary-container) {
+  background: var(--ws-accent);
+  color: #fff;
+}
+
+.hp-workspace main :is(.text-muted, .text-on-surface-variant) {
+  color: var(--ws-muted);
+}
+
+/* La famille « tertiary » du thème Material est verte : dans les espaces de
+   travail elle ne sert que d'accent décoratif, on la ramène au bleu public.
+   Le vert reste réservé aux états de succès (messages flash, indicateurs). */
+.hp-workspace {
+  --color-tertiary: #0878b9;
+  --color-tertiary-container: #1598d1;
+  --color-tertiary-fixed: #e2f4fc;
+  --color-tertiary-fixed-dim: #c7ebfb;
+  --color-on-tertiary-container: #e2f4fc;
+  --color-on-tertiary-fixed: #071f3d;
+  --color-on-tertiary-fixed-variant: #0b3b66;
+}
+
+/* Les variantes d'opacité sont compilées en hexadécimal figé : elles ne
+   suivent pas la variable ci-dessus et se remappent explicitement. */
+.hp-workspace main [class*='bg-tertiary-container/'] {
+  background-color: color-mix(in srgb, var(--ws-accent) 20%, transparent);
+}
+
+.hp-workspace :is(main, footer) footer,
+.hp-workspace > footer {
+  border-color: var(--ws-line);
+  background: var(--ws-card);
+}
+
+/* --- Navigation mobile --------------------------------------------------- */
+.hp-mobile-nav-toggle,
+.hp-mobile-nav-backdrop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .hp-mobile-nav-toggle {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    right: 16px;
+    bottom: 18px;
+    z-index: 70;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--ws-nav);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(7, 31, 61, .3);
+  }
+
+  .hp-mobile-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    border: 0;
+    background: rgba(7, 31, 61, .5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease, visibility .2s ease;
+  }
+
+  .hp-workspace.hp-nav-open .hp-mobile-nav-backdrop {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .hp-workspace > :is(aside, nav)[data-mobile-ready] {
+    display: flex !important;
+    position: fixed;
+    inset-block: 0;
+    left: 0;
+    z-index: 66;
+    width: min(84vw, 290px);
+    transform: translateX(-102%);
+    transition: transform .24s ease;
+  }
+
+  .hp-workspace.hp-nav-open > :is(aside, nav)[data-mobile-ready] {
+    transform: translateX(0);
+  }
+
+  .hp-workspace > main {
+    margin-left: 0 !important;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-workspace *,
+  .hp-workspace *::before,
+  .hp-workspace *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }

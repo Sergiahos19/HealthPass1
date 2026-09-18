@@ -40,6 +40,11 @@ Compte médecin de démonstration (créé par les migrations) :
 - Email : `medecin@healthpass.test`
 - Mot de passe : `Medecin@12345`
 
+HealthPass fonctionne en mono-établissement. Les rôles disponibles sont
+super-administrateur, administrateur, médecin, caissier/facturation et patient.
+Les comptes de démonstration supplémentaires sont `caissier@healthpass.test`
+(`Caissier@12345`) et `sergioahossi19@gmail.com` (`Patient@12345`).
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.

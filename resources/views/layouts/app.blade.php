@@ -6,7 +6,7 @@
     <title>HealthPass - {{ $title ?? 'Accueil' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col antialiased overflow-x-hidden">
+<body class="{{ request()->routeIs('home') ? 'hp-public hp-home' : '' }} bg-background text-on-background min-h-screen flex flex-col antialiased overflow-x-hidden">
 
     <x-navbar />
 
@@ -14,7 +14,9 @@
         @yield('content')
     </main>
 
-    <x-footer />
+    @if (request()->routeIs('home'))
+        <x-footer />
+    @endif
 
 </body>
 </html>

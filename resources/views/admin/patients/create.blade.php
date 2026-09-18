@@ -4,31 +4,9 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Enregistrement Patient - HealthPass</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#005a71",
-                        "primary-container": "#0e7490",
-                        "bordure-douce": "#F1F5F9",
-                        "fond-page": "#F8FAFC",
-                        "on-surface": "#0d1c2f",
-                        "on-surface-variant": "#3f484c",
-                        "error": "#ba1a1a",
-                    },
-                    "fontFamily": {
-                        "corps-standard": ["Inter"],
-                        "titre-section": ["Plus Jakarta Sans"],
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -109,7 +87,7 @@
                     </div>
                     <div class="space-y-1.5">
                         <label for="poids" class="block text-sm font-semibold text-slate-700">Poids (kg)</label>
-                        <input type="number" id="poids" name="poids" value="{{ old('poids') }}" min="1" max="500" step="0.1" placeholder="70.0" class="w-full rounded-xl border border-slate-200 px-4 py-2.5" />
+                        <input type="number" id="poids" name="poids" value="{{ old('poids') }}" min="1" max="500" step="0.01" placeholder="70.00" class="w-full rounded-xl border border-slate-200 px-4 py-2.5" />
                         @error('poids')<p class="text-xs text-red-500">{{ $message }}</p>@enderror
                     </div>
                     <div class="space-y-1.5">
@@ -215,29 +193,6 @@
                         <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-            </div>
-
-            <!-- Section Biométrie -->
-            <div class="space-y-1.5 pt-2">
-                <label class="block text-sm font-semibold text-slate-700">
-                    Sécurité Biométrique
-                </label>
-                <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-[#059669]/10 text-[#059669] flex items-center justify-center">
-                            <span class="material-symbols-outlined">fingerprint</span>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-800">Empreinte digitale</p>
-                            <p class="text-xs text-slate-500">Chiffrement biométrique de bout en bout</p>
-                        </div>
-                    </div>
-                    <button type="button" class="px-3 py-1.5 text-xs font-semibold text-[#0e7490] bg-white border border-[#0e7490]/30 rounded-lg hover:bg-[#0e7490]/10 transition-colors flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">scanner</span>
-                        Numériser
-                    </button>
-                </div>
-                <input type="hidden" name="biometric_data" id="biometric_data">
             </div>
 
             <!-- Modal Footer (Action Bouton Terminer) -->

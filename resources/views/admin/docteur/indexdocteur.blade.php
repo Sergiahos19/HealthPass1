@@ -35,7 +35,7 @@
                             @else
                                 <form action="{{ route('doctors.approve', $medecin->id_docteur) }}" method="POST">@csrf @method('PATCH')<button type="submit" class="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-on-primary">Approuver</button></form>
                             @endif
-                            <a href="{{ route('admin.dashboard', ['section' => 'medecins', 'edit' => $medecin->id_docteur]) }}" aria-label="Modifier ce médecin" title="Modifier" class="rounded-lg p-2 text-secondary hover:bg-secondary-container/20"><span class="material-symbols-outlined">edit</span></a><form action="{{ route('doctors.destroy', $medecin->id_docteur) }}" method="POST">@csrf @method('DELETE')<button type="submit" aria-label="Supprimer ce médecin" title="Supprimer" class="rounded-lg p-2 text-error hover:bg-error-container/40"><span class="material-symbols-outlined">delete</span></button></form>
+                            <a href="{{ route('admin.dashboard', ['section' => 'medecins', 'edit' => $medecin->id_docteur]) }}" aria-label="Modifier ce médecin" title="Modifier" class="rounded-lg p-2 text-secondary hover:bg-secondary-container/20"><span class="material-symbols-outlined">edit</span></a><form action="{{ route('doctors.destroy', $medecin->id_docteur) }}" method="POST" onsubmit="return confirm('Êtes-vous vraiment sûr de vouloir supprimer ce médecin ? Cette action est irréversible.')">@csrf @method('DELETE')<button type="submit" aria-label="Supprimer ce médecin" title="Supprimer" class="rounded-lg p-2 text-error hover:bg-error-container/40"><span class="material-symbols-outlined">delete</span></button></form>
                         </div>
                     </div>
                 @empty
