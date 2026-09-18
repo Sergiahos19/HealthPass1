@@ -861,3 +861,54 @@ h1, h2, h3, h4, h5, h6 {
     animation: none !important;
   }
 }
+
+/* Keep the public header visible on every viewport. The KOLINK skin used to
+   override the shared sticky positioning with `position: relative`. */
+.hp-site-header.hk-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, .96);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.hp-home :is(#a-propos, #parcours, #solutions, #contact) {
+  scroll-margin-top: 140px;
+}
+
+@media (max-width: 899px) {
+  .hp-site-header.hk-header {
+    overflow: visible;
+  }
+
+  .hp-site-header .hp-nav-links {
+    max-height: calc(100dvh - 130px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 639px) {
+  .hp-site-header .hk-header-wide {
+    width: calc(100% - 32px);
+  }
+
+  .hp-site-header .hk-topbar-right {
+    display: none;
+  }
+
+  .hp-site-header .hk-main-nav {
+    min-height: 70px;
+    padding-inline: 16px;
+  }
+
+  .hp-site-header .hk-main-nav .hp-brand {
+    min-width: 0;
+  }
+
+  .hp-site-header .hp-nav-links {
+    left: 12px;
+    right: 12px;
+  }
+}
