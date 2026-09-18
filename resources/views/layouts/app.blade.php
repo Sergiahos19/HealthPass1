@@ -10,7 +10,7 @@
 
     <x-navbar />
 
-    <main class="grow flex flex-col">
+    <main class="hp-page-with-header grow flex flex-col">
         @yield('content')
     </main>
 

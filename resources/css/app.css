@@ -309,7 +309,9 @@ h1, h2, h3, h4, h5, h6 {
 @media(max-width:639px) { .hp-clinic-hero { padding: 30px 20px 20px; } .hp-clinic-hero__content { padding-top: 20px; } .hp-clinic-hero__content>.hp-kicker { margin-top: 30px; } .hp-clinic-hero h1 { font-size: 2.55rem; } .hp-clinic-slides { aspect-ratio: 4/5; border-radius: 3px 34px 3px 3px; } .hp-clinic-slide:first-child img { object-position: 68% center; } .hp-slide-caption { left: 20px; right: 20px; } .hp-strengths { margin-top: 30px; padding: 0 20px 70px; } .hp-strengths article { padding-inline: 10px; } .hp-about { padding: 76px 20px; } .hp-about-grid { margin-top: 40px; } .hp-contact-section { padding: 60px 20px; } .hp-contact-card { padding: 36px 24px; border-radius: 3px 28px 3px 3px; } }
 
 /* Navigation and care journey */
-.hp-site-header { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #e1e1dd; background: rgba(250,249,246,.94); backdrop-filter: blur(16px); }
+.hp-site-header { position: fixed; inset: 0 0 auto; z-index: 50; width: 100%; border-bottom: 1px solid #e1e1dd; background: rgba(250,249,246,.94); backdrop-filter: blur(16px); }
+.hp-page-with-header { padding-top: 138px; }
+.hp-home [id] { scroll-margin-top: 138px; }
 .hp-site-nav { max-width: 1440px; min-height: 84px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .hp-brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: #182e46; color: #cfb782; }
 .hp-brand-mark .material-symbols-outlined { font-size: 23px; }
@@ -342,6 +344,8 @@ h1, h2, h3, h4, h5, h6 {
 .hp-footer__bottom span:last-child { display: flex; align-items: center; gap: 6px; }
 .hp-footer__bottom .material-symbols-outlined { color: #cfb782; font-size: 15px; }
 @media(max-width:899px) {
+  .hp-page-with-header { padding-top: 112px; }
+  .hp-home [id] { scroll-margin-top: 112px; }
   .hp-site-nav { min-height: 72px; padding: 0 20px; }
   .hp-menu-button { display: grid; }
   .hp-nav-links { position: absolute; left: 16px; right: 16px; top: calc(100% + 8px); display: none; align-items: stretch; gap: 0; padding: 14px; border: 1px solid #dadddf; border-radius: 14px; background: #fff; box-shadow: 0 18px 50px rgba(24,46,70,.13); }
