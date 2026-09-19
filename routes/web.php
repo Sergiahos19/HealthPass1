@@ -1226,3 +1226,36 @@ Route::delete('/admin/medecins/{id}', function (string $id) {
 Route::get('/admin/medecins', function () {
     return to_route('admin.dashboard', ['section' => 'medecins']);
 })->middleware('auth')->name('admin.medecins');
+
+Route::get('/google/auth', function () {
+    $client = new \Google\Client();
+
+    $client->setClientId(config('services.google.client_id'));
+    $client->setClientSecret(config('services.google.client_secret'));
+    $client->setRedirectUri(config('services.google.redirect_uri'));
+    $client->setAccessType('offline');
+    $client->setPrompt('consent');
+    $client->addScope('https://www.googleapis.com/auth/gmail.send');
+
+    return redirect()->away($client->createAuthUrl());
+})->name('google.auth');
+
+Route::get('/google/callback', function (Request $request) {
+    $client = new \Google\Client();
+
+    $client->setClientId(config('services.google.client_id'));
+    $client->setClientSecret(config('services.google.client_secret'));
+    $client->setRedirectUri(config('services.google.redirect_uri'));
+    $client->setAccessType('offline');
+
+    $token = $client->fetchAccessTokenWithAuthCode($request->string('code')->toString());
+
+    if (isset($token['error'])) {
+        return response()->json($token, 400);
+    }
+
+    return response()->json([
+        'message' => 'Autorisation Google réussie.',
+        'refresh_token' => $token['refresh_token'] ?? null,
+    ]);
+})->name('google.callback');

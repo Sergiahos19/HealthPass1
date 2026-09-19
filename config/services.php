@@ -41,4 +41,10 @@ return [
         'api_version' => env('WHATSAPP_API_VERSION', 'v19.0'),
     ],
 
+    'google' => [
+    'client_id' => env('GOOGLE_CLIENT_ID'),
+    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    'redirect_uri' => env('GOOGLE_REDIRECT_URI'),
+    'refresh_token' => env('GOOGLE_REFRESH_TOKEN'),
+],
 ];
