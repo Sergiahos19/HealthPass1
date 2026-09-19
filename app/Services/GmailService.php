@@ -19,9 +19,14 @@ class GmailService
         $client->setRedirectUri(config('services.google.redirect_uri'));
         $client->setAccessType('offline');
 
+
         $client->setAccessToken([
             'refresh_token' => config('services.google.refresh_token'),
         ]);
+
+        $client->fetchAccessTokenWithRefreshToken(
+            config('services.google.refresh_token')
+        );
 
         $this->gmail = new Gmail($client);
     }
