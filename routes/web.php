@@ -726,20 +726,20 @@ Route::post('/admin/utilisateurs', function (Request $request) {
     });
 
     $roleLabel = $validated['role'] === 'role-doctor' ? 'médecin' : 'service';
+    
     $mailError = false;
+
     try {
-        Mail::html(
+        app(\App\Services\GmailService::class)->send(
+            $validated['email'],
+            'Bienvenue sur HealthPass — vos identifiants de connexion',
             view('emails.user-account-created', [
                 'name' => trim($validated['prenom'].' '.$validated['nom']),
                 'roleLabel' => $roleLabel,
                 'email' => $validated['email'],
                 'temporaryPassword' => $temporaryPassword,
                 'loginUrl' => route('login'),
-            ])->render(),
-            function ($message) use ($validated): void {
-                $message->to($validated['email'])
-                    ->subject('Bienvenue sur HealthPass — vos identifiants de connexion');
-            }
+            ])->render()
         );
     } catch (\Throwable $exception) {
         report($exception);
