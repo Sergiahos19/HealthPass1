@@ -1002,20 +1002,22 @@ Route::post('/admin/carnets/{id}/envoyer', function (string $id) {
     $prescriptions = Schema::hasTable('PRESCRIPTION') ? DB::table('PRESCRIPTION')->where('id_patient', $id)->latest('date_prescription')->get() : collect();
     $pdf = Pdf::loadView('pdf.medical-record', compact('patient', 'etablissement', 'consultations', 'analyses', 'prescriptions'))->setPaper('a4');
     $pdfContents = $pdf->output();
-    $mailConfigured = config('mail.default') !== 'smtp'
-        || (filled(config('mail.mailers.smtp.username')) && filled(config('mail.mailers.smtp.password')));
+    $mailConfigured = filled(config('services.google.refresh_token'));
     $emailFailed = false;
     if ($mailConfigured) {
         try {
-            Mail::to($patient->email)->send(new \App\Mail\MedicalRecordMail(
-                $pdfContents,
-                trim($patient->prenom.' '.$patient->nom),
-                'carnet-medical-'.$patient->id_patient.'.pdf',
-                Auth::user()->email,
-                trim(Auth::user()->prenom.' '.Auth::user()->nom),
-                $etablissement->nom_etablissement ?? 'Votre établissement de santé',
-            ));
-        } catch (\Throwable $exception) {
+    app(\App\Services\GmailService::class)->send(
+        $patient->email,
+        'Votre carnet médical - '.($etablissement->nom_etablissement ?? 'Votre établissement de santé'),
+        view('emails.medical-record', [
+            'patientName' => trim($patient->prenom.' '.$patient->nom),
+            'senderName' => $etablissement->nom_etablissement ?? 'Votre établissement de santé',
+            'senderEmail' => config('mail.from.address'),
+        ])->render(),
+        $pdfContents,
+        'carnet-medical-'.$patient->id_patient.'.pdf'
+    );
+} catch (\Throwable $exception) {
             report($exception);
             $emailFailed = true;
         }
