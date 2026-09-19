@@ -19,28 +19,27 @@ class GmailService
         $client->setRedirectUri(config('services.google.redirect_uri'));
         $client->setAccessType('offline');
 
-$refreshToken = config('services.google.refresh_token');
+        $refreshToken = config('services.google.refresh_token');
 
-if (! is_string($refreshToken) || trim($refreshToken) === '') {
-    throw new \RuntimeException('GOOGLE_REFRESH_TOKEN est absent ou vide.');
-}
+        if (! is_string($refreshToken) || trim($refreshToken) === '') {
+            throw new \RuntimeException('GOOGLE_REFRESH_TOKEN est absent ou vide.');
+        }
 
-$token = $client->fetchAccessTokenWithRefreshToken(
-    trim($refreshToken)
-);
+        $token = $client->fetchAccessTokenWithRefreshToken(
+            trim($refreshToken)
+        );
 
-if (isset($token['error'])) {
-    throw new \RuntimeException(
-        'Erreur Google OAuth : '.($token['error_description'] ?? $token['error'])
-    );
-}
+        if (isset($token['error'])) {
+            throw new \RuntimeException(
+                'Erreur Google OAuth : ' . json_encode($token)
+            );
+        }
 
-if (! isset($token['access_token'])) {
-    throw new \RuntimeException(
-        'Google n’a pas retourné de jeton d’accès valide.'
-    );
-}
-
+        if (! isset($token['access_token'])) {
+            throw new \RuntimeException(
+                'Google n’a pas retourné de jeton d’accès valide.'
+            );
+        }
 
         $this->gmail = new Gmail($client);
     }
@@ -76,6 +75,7 @@ if (! isset($token['access_token'])) {
         $raw .= "--{$boundary}--";
 
         $message = new Message();
+
         $message->setRaw(
             rtrim(strtr(base64_encode($raw), '+/', '-_'), '=')
         );
