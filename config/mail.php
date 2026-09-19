@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'resend'),
+    'default' => env('MAIL_MAILER', 'log'),
 
     /*
     |--------------------------------------------------------------------------
@@ -37,9 +37,6 @@ return [
 
     'mailers' => [
 
-    'resend' => [
-    'transport' => 'resend',
-],
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME', env('MAIL_ENCRYPTION') === 'ssl' ? 'smtps' : null),
