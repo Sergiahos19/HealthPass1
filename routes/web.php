@@ -1018,9 +1018,14 @@ Route::post('/admin/carnets/{id}/envoyer', function (string $id) {
         'carnet-medical-'.$patient->id_patient.'.pdf'
     );
 } catch (\Throwable $exception) {
-            report($exception);
-            $emailFailed = true;
-        }
+    report($exception);
+    $emailFailed = true;
+
+    return response()->json([
+        'erreur' => $exception->getMessage(),
+        'type' => get_class($exception),
+    ], 500);
+}
     }
 
     if ($emailFailed) {
