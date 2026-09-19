@@ -19,14 +19,28 @@ class GmailService
         $client->setRedirectUri(config('services.google.redirect_uri'));
         $client->setAccessType('offline');
 
+$refreshToken = config('services.google.refresh_token');
 
-        $client->setAccessToken([
-            'refresh_token' => config('services.google.refresh_token'),
-        ]);
+if (! is_string($refreshToken) || trim($refreshToken) === '') {
+    throw new \RuntimeException('GOOGLE_REFRESH_TOKEN est absent ou vide.');
+}
 
-        $client->fetchAccessTokenWithRefreshToken(
-            config('services.google.refresh_token')
-        );
+$token = $client->fetchAccessTokenWithRefreshToken(
+    trim($refreshToken)
+);
+
+if (isset($token['error'])) {
+    throw new \RuntimeException(
+        'Erreur Google OAuth : '.($token['error_description'] ?? $token['error'])
+    );
+}
+
+if (! isset($token['access_token'])) {
+    throw new \RuntimeException(
+        'Google n’a pas retourné de jeton d’accès valide.'
+    );
+}
+
 
         $this->gmail = new Gmail($client);
     }
